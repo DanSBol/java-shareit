@@ -18,6 +18,9 @@ public class UserDto {
 
     public static class UserDtoBuilder
     {
-        public UserDtoBuilder(){}
+        public UserDtoBuilder()
+        {
+            // Пустой конструктор
+        }
     }
 }
