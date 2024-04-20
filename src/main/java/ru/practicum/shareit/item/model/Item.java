@@ -16,8 +16,12 @@ public class Item {
     boolean available;
     long owner;
     ItemRequest request;
+    
     public static class ItemBuilder
     {
-        public ItemBuilder(){}
+        public ItemBuilder() 
+        {
+            // Пустой конструктор
+        }
     }
 }
