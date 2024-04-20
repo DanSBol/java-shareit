@@ -5,9 +5,6 @@ import lombok.Data;
 
 import java.time.LocalDate;
 
-/**
- * TODO Sprint add-item-requests.
- */
 @Data
 @Builder(builderClassName = "ItemRequestBuilder")
 public class ItemRequest {
@@ -15,8 +12,12 @@ public class ItemRequest {
     String description;
     long requester;
     LocalDate created;
+    
     public static class ItemRequestBuilder
     {
-        public ItemRequestBuilder(){}
+        public ItemRequestBuilder()
+        {
+            // Пустой конструктор
+        }
     }
 }
