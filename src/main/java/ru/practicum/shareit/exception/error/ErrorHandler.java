@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.exception.IllegalArgumentException;
-
 import java.util.List;
 
 @RestControllerAdvice

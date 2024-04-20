@@ -4,9 +4,6 @@ import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.request.model.ItemRequest;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Data
 @Builder(builderClassName = "ItemBuilder")
 public class Item {
@@ -16,8 +13,10 @@ public class Item {
     boolean available;
     long owner;
     ItemRequest request;
-    public static class ItemBuilder
-    {
-        public ItemBuilder(){}
+
+    public static class ItemBuilder {
+        public ItemBuilder() {
+            // Пустой конструктор
+        }
     }
 }

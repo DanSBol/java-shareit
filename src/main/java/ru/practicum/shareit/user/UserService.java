@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface UserService {
+
     UserDto addUser(UserDto userDto);
 
     Optional<UserDto> updateUser(long userId, UserDto userDto);

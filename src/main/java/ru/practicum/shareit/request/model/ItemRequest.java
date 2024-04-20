@@ -15,8 +15,10 @@ public class ItemRequest {
     String description;
     long requester;
     LocalDate created;
-    public static class ItemRequestBuilder
-    {
-        public ItemRequestBuilder(){}
+
+    public static class ItemRequestBuilder {
+        public ItemRequestBuilder() {
+            // Пустой конструктор
+        }
     }
 }

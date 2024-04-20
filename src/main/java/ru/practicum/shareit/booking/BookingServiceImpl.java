@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
-
 import java.time.LocalDate;
 import java.util.*;
 
@@ -14,7 +13,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
     private final Map<Long, Booking> bookings = new HashMap<>();
-
     private long id = 0;
 
     @Override

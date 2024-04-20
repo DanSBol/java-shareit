@@ -6,17 +6,14 @@ import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
-
 import java.util.*;
 
 @Component
 @Primary
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
     private final Map<Long, User> users = new HashMap<>();
     private final Map<String, Long> userEmails = new HashMap<>();
-
     private int id = 0;
 
     @Override

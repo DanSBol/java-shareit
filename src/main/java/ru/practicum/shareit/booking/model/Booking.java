@@ -2,7 +2,6 @@ package ru.practicum.shareit.booking.model;
 
 import lombok.Builder;
 import lombok.Data;
-
 import java.time.LocalDate;
 
 @Data
@@ -14,8 +13,10 @@ public class Booking {
     LocalDate end;
     long booker;
     BookingStatus status;
-    public static class BookingBuilder
-    {
-        public BookingBuilder(){}
+
+    public static class BookingBuilder {
+        public BookingBuilder() {
+            // Пустой конструктор
+        }
     }
 }

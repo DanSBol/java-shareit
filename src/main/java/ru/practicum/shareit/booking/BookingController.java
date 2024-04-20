@@ -11,9 +11,6 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Optional;
 
-/**
- * TODO Sprint add-bookings.
- */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/bookings")

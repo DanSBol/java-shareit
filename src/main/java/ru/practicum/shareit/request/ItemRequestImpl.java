@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.request.model.ItemRequest;
-
 import java.util.*;
 
 @Component
@@ -12,7 +11,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ItemRequestImpl implements ItemRequestService {
     private final Map<Long, ItemRequest> itemRequests = new HashMap<>();
-
     private int id = 0;
 
     @Override

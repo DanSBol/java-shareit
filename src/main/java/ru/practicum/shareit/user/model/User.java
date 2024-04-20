@@ -2,7 +2,6 @@ package ru.practicum.shareit.user.model;
 
 import lombok.Builder;
 import lombok.Data;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
@@ -14,8 +13,10 @@ public class User {
     @NotNull
     @Email(message = "User Email invalid.")
     String email;
-    public static class UserBuilder
-    {
-        public UserBuilder(){}
+
+    public static class UserBuilder {
+        public UserBuilder() {
+            // Пустой конструктор
+        }
     }
 }
