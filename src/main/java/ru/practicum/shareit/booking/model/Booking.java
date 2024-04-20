@@ -14,8 +14,12 @@ public class Booking {
     LocalDate end;
     long booker;
     BookingStatus status;
+    
     public static class BookingBuilder
     {
-        public BookingBuilder(){}
+        public BookingBuilder()
+        {
+            // Пустой конструктор
+        }
     }
 }
