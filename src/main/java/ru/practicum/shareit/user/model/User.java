@@ -14,8 +14,12 @@ public class User {
     @NotNull
     @Email(message = "User Email invalid.")
     String email;
+    
     public static class UserBuilder
     {
-        public UserBuilder(){}
+        public UserBuilder()
+        {
+            // Пустой конструктор
+        }
     }
 }
