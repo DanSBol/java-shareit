@@ -13,7 +13,6 @@ public class UserDto {
     @Email(message = "User Email invalid.")
     String email;
     String name;
-    @NotNull
 
     public static class UserDtoBuilder {
         public UserDtoBuilder() {
