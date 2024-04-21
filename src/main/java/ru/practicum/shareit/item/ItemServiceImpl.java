@@ -8,7 +8,6 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.UserService;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -66,9 +65,9 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Collection<ItemDto> getItemsByOwner(long userId) {
         return items.values().stream()
-                .filter(item -> userId == item.getOwner())
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+            .filter(item -> userId == item.getOwner())
+            .map(ItemMapper::toItemDto)
+            .collect(Collectors.toList());
     }
 
     @Override
