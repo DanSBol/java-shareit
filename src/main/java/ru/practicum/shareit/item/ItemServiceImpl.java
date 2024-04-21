@@ -47,7 +47,7 @@ public class ItemServiceImpl implements ItemService {
                 if (item.getDescription() != null) {
                     itemFromItems.setDescription(item.getDescription());
                 }
-                if ((item.getName() == null & item.getDescription() == null) | item.getId() != 0) {
+                if ((item.getName() == null & item.getDescription() == null) || item.getId() != 0) {
                     itemFromItems.setAvailable(item.isAvailable());
                 }
                 items.put(itemId, itemFromItems);
@@ -91,7 +91,7 @@ public class ItemServiceImpl implements ItemService {
         Collection<ItemDto> itemDtoCollection = new ArrayList<>();
         if (!text.isEmpty()) {
             for (Item item : items.values()) {
-                if ((item.getName().toLowerCase().contains(text.toLowerCase()) |
+                if ((item.getName().toLowerCase().contains(text.toLowerCase()) ||
                         item.getDescription().toLowerCase().contains(text.toLowerCase())) & item.isAvailable()) {
                     itemDtoCollection.add(ItemMapper.toItemDto(item));
                 }
