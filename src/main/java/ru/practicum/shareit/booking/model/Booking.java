@@ -7,12 +7,12 @@ import java.time.LocalDate;
 @Data
 @Builder(builderClassName = "BookingBuilder")
 public class Booking {
-    long id;
-    long item;
-    LocalDate start;
-    LocalDate end;
-    long booker;
-    BookingStatus status;
+    private long id;
+    private long item;
+    private LocalDate start;
+    private LocalDate end;
+    private long booker;
+    private BookingStatus status;
 
     public static class BookingBuilder {
         public BookingBuilder() {

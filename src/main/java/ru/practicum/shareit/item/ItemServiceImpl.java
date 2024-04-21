@@ -7,8 +7,10 @@ import ru.practicum.shareit.exception.IllegalArgumentException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.user.UserService;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Primary
@@ -16,11 +18,14 @@ import java.util.*;
 public class ItemServiceImpl implements ItemService {
 
     private final Map<Long, Item> items = new HashMap<>();
-
     private int id = 0;
+    private final UserService userService;
 
     @Override
     public ItemDto addItem(long userId, Item item) {
+        if (userService.getUser(userId) == null) {
+            throw new NotFoundException("User not found");
+        }
         if (item.getName().isEmpty()) {
             throw new IllegalArgumentException("empty item name.");
         }
@@ -37,66 +42,60 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Optional<ItemDto> updateItem(long userId, long itemId, Item item) {
-        if (items.containsKey(itemId)) {
-            Item itemFromItems = items.get(itemId);
-            if (itemFromItems.getOwner() == userId) {
-                if (item.getName() != null) {
-                    itemFromItems.setName(item.getName());
-                }
-                if (item.getDescription() != null) {
-                    itemFromItems.setDescription(item.getDescription());
-                }
-                if ((item.getName() == null && item.getDescription() == null) || item.getId() != 0) {
-                    itemFromItems.setAvailable(item.isAvailable());
-                }
-                items.put(itemId, itemFromItems);
-                return Optional.of(ItemMapper.toItemDto(itemFromItems));
-            } else {
-                throw new NotFoundException("This item has another owner.");
-            }
+    public ItemDto updateItem(long userId, long itemId, Item item) {
+        if (!items.containsKey(itemId)) {
+            throw new NotFoundException("Item not found.");
         }
-        return Optional.empty();
+        Item itemFromItems = items.get(itemId);
+        if (itemFromItems.getOwner() != userId) {
+            throw new NotFoundException("This item has another owner.");
+        }
+        if (item.getName() != null) {
+            itemFromItems.setName(item.getName());
+        }
+        if (item.getDescription() != null) {
+            itemFromItems.setDescription(item.getDescription());
+        }
+        if ((item.getName() == null && item.getDescription() == null) || item.getId() != 0) {
+            itemFromItems.setAvailable(item.isAvailable());
+        }
+        items.put(itemId, itemFromItems);
+        return ItemMapper.toItemDto(itemFromItems);
     }
 
     @Override
     public Collection<ItemDto> getItemsByOwner(long userId) {
-        Collection<ItemDto> itemDtoCollection = new ArrayList<>();
-        for (Item item : items.values()) {
-            if (item.getOwner() == userId) {
-                itemDtoCollection.add(ItemMapper.toItemDto(item));
-            }
-        }
-        return itemDtoCollection;
+        return items.values().stream()
+                .filter(item -> userId == item.getOwner())
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<Long> getUserId(long itemId) {
-        if (items.containsKey(itemId)) {
-            return Optional.of(items.get(itemId).getOwner());
+    public Long getUserId(long itemId) {
+        if (!items.containsKey(itemId)) {
+            throw new NotFoundException("Item not found.");
         }
-        return Optional.empty();
+        return items.get(itemId).getOwner();
     }
 
     @Override
-    public Optional<ItemDto> getItem(long itemId) {
-        if (items.containsKey(itemId)) {
-            return Optional.of(ItemMapper.toItemDto(items.get(itemId)));
+    public ItemDto getItem(long itemId) {
+        if (!items.containsKey(itemId)) {
+            throw new NotFoundException("Item not found.");
         }
-        return Optional.empty();
+        return ItemMapper.toItemDto(items.get(itemId));
     }
 
     @Override
     public Collection<ItemDto> search(String text) {
-        Collection<ItemDto> itemDtoCollection = new ArrayList<>();
-        if (!text.isEmpty()) {
-            for (Item item : items.values()) {
-                if ((item.getName().toLowerCase().contains(text.toLowerCase()) ||
-                        item.getDescription().toLowerCase().contains(text.toLowerCase())) && item.isAvailable()) {
-                    itemDtoCollection.add(ItemMapper.toItemDto(item));
-                }
-            }
+        if (text.isEmpty()) {
+            return new ArrayList<>();
         }
-        return itemDtoCollection;
+        return items.values().stream()
+            .filter(item -> (item.getName().toLowerCase().contains(text.toLowerCase()) ||
+                    item.getDescription().toLowerCase().contains(text.toLowerCase())) && item.isAvailable())
+            .map(ItemMapper::toItemDto)
+            .collect(Collectors.toList());
     }
 }

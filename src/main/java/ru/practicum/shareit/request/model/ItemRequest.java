@@ -5,16 +5,13 @@ import lombok.Data;
 
 import java.time.LocalDate;
 
-/**
- * TODO Sprint add-item-requests.
- */
 @Data
 @Builder(builderClassName = "ItemRequestBuilder")
 public class ItemRequest {
-    long id;
-    String description;
-    long requester;
-    LocalDate created;
+    private long id;
+    private String description;
+    private long requester;
+    private LocalDate created;
 
     public static class ItemRequestBuilder {
         public ItemRequestBuilder() {

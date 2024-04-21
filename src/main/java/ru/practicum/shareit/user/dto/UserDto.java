@@ -8,11 +8,11 @@ import javax.validation.constraints.NotNull;
 @Data
 @Builder(builderClassName = "UserDtoBuilder")
 public class UserDto {
-    long id;
-    String name;
+    private long id;
+    private String name;
     @NotNull
     @Email(message = "User Email invalid.")
-    String email;
+    private String email;
 
     public static class UserDtoBuilder {
         public UserDtoBuilder() {

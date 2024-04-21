@@ -9,14 +9,14 @@ import javax.validation.constraints.NotEmpty;
 @Data
 @Builder(builderClassName = "ItemBuilder")
 public class Item {
-    long id;
+    private long id;
     @NotEmpty
-    String name;
+    private String name;
     @NotEmpty
-    String description;
-    boolean available;
-    long owner;
-    ItemRequest request;
+    private String description;
+    private boolean available;
+    private long owner;
+    private ItemRequest request;
 
     public static class ItemBuilder {
         public ItemBuilder() {
