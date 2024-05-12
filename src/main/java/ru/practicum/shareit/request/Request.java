@@ -9,7 +9,6 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.item.Item;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
