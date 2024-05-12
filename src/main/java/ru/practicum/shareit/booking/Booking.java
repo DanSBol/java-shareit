@@ -16,7 +16,7 @@ import ru.practicum.shareit.user.User;
 @Data
 @EqualsAndHashCode
 @NoArgsConstructor
-public class Booking implements Serializable {
+public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
