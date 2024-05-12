@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder(builderClassName = "RequestBuilder")
 @EqualsAndHashCode
-public class Request implements Serializable {
+public class Request {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
