@@ -9,7 +9,7 @@ import ru.practicum.shareit.user.UserDto;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderClassName = "BookingDtoBuilder")
-public class BookingDto implements Serializable {
+public class BookingDto {
     private Long id;
     private Long itemId;
     private ItemDto item;
