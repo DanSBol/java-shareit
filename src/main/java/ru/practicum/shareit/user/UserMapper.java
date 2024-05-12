@@ -1,10 +1,14 @@
 package ru.practicum.shareit.user;
 
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserMapper {
-    public static UserDto toUserDto(User user) {
+    public static UserDto mapToUserDto(User user) {
         return new UserDto.UserDtoBuilder()
             .id(user.getId())
             .name(user.getName())
@@ -12,11 +16,19 @@ public class UserMapper {
             .build();
     }
 
-    public static User toUser(long userId, UserDto userDto) {
-        return new User.UserBuilder()
-            .id(userId)
-            .name(userDto.getName())
-            .email(userDto.getEmail())
-            .build();
+    public static User mapToNewUser(UserDto userDto) {
+        User user = new User();
+        user.setId(userDto.getId());
+        user.setName(userDto.getName());
+        user.setEmail(userDto.getEmail());
+        return user;
+    }
+
+    public static List<UserDto> mapToUserDto(Iterable<User> users) {
+        List<UserDto> result = new ArrayList<>();
+        for (User user : users) {
+            result.add(mapToUserDto(user));
+        }
+        return result;
     }
 }
