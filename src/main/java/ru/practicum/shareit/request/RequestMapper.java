@@ -1,12 +1,9 @@
 package ru.practicum.shareit.request;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import ru.practicum.shareit.user.User;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RequestMapper {
     public static RequestDto mapToRequestDto(Request request) {
         return new RequestDto.RequestDtoBuilder()
@@ -25,11 +22,9 @@ public class RequestMapper {
             .build();
     }
 
-    public static List<RequestDto> mapToRequestDto(Iterable<Request> requests) {
-        List<RequestDto> result = new ArrayList<>();
-        for (Request request : requests) {
-            result.add(mapToRequestDto(request));
-        }
-        return result;
+    public static List<RequestDto> mapToRequestDto(List<Request> requests) {
+        return requests.stream()
+            .map(RequestMapper::mapToRequestDto)
+            .collect(Collectors.toList());
     }
 }

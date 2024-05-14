@@ -1,12 +1,8 @@
 package ru.practicum.shareit.user;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserMapper {
     public static UserDto mapToUserDto(User user) {
         return new UserDto.UserDtoBuilder()
@@ -24,11 +20,9 @@ public class UserMapper {
         return user;
     }
 
-    public static List<UserDto> mapToUserDto(Iterable<User> users) {
-        List<UserDto> result = new ArrayList<>();
-        for (User user : users) {
-            result.add(mapToUserDto(user));
-        }
-        return result;
+    public static List<UserDto> mapToUserDto(List<User> users) {
+        return users.stream()
+            .map(UserMapper::mapToUserDto)
+            .collect(Collectors.toList());
     }
 }

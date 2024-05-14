@@ -1,13 +1,11 @@
 package ru.practicum.shareit.item;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import ru.practicum.shareit.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommentMapper {
 
     public static Comment mapToComment(CommentDto commentDto, User user, Item item) {
@@ -28,11 +26,9 @@ public class CommentMapper {
             .build();
     }
 
-    public static List<CommentDto> mapToCommentsDto(Iterable<Comment> comments) {
-        List<CommentDto> commentsDto = new ArrayList<>();
-        for (Comment comment : comments) {
-            commentsDto.add(mapToCommentDto(comment));
-        }
-        return commentsDto;
+    public static List<CommentDto> mapToCommentsDto(List<Comment> comments) {
+        return comments.stream()
+            .map(CommentMapper::mapToCommentDto)
+            .collect(Collectors.toList());
     }
 }

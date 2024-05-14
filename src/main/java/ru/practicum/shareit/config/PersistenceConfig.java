@@ -16,9 +16,6 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@EnableTransactionManagement
-@EnableJpaRepositories(basePackages = "ru.practicum.shareit")
-@PropertySource(value = "classpath:application.properties")
 public class PersistenceConfig {
     private final Environment environment;
 

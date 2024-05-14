@@ -1,19 +1,17 @@
 package ru.practicum.shareit.booking;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.Item;
-
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.item.ItemMapper;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BookingMapper {
+    static final String DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
+
     public static Booking mapToBooking(BookingDto bookingDto, User user, Item item) {
         Booking booking = new Booking();
         booking.setBooker(user);
@@ -31,8 +29,8 @@ public class BookingMapper {
             .booker(UserMapper.mapToUserDto(booking.getBooker()))
             .itemId(booking.getItem().getId())
             .item(ItemMapper.mapToItemDto(booking.getItem(), null, null, null))
-            .start(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss").format(booking.getStartDate()))
-            .end(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss").format(booking.getEndDate()))
+            .start(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN).format(booking.getStartDate()))
+            .end(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN).format(booking.getEndDate()))
             .status(booking.getStatus().toString())
             .build();
     }
@@ -44,11 +42,9 @@ public class BookingMapper {
             .build();
     }
 
-    public static List<BookingDto> mapToBookingsDto(Iterable<Booking> bookings) {
-        List<BookingDto> dtos = new ArrayList<>();
-        for (Booking booking : bookings) {
-            dtos.add(mapToBookingDto(booking));
-        }
-        return dtos;
+    public static List<BookingDto> mapToBookingsDto(List<Booking> bookings) {
+        return bookings.stream()
+            .map(BookingMapper::mapToBookingDto)
+            .collect(Collectors.toList());
     }
 }
