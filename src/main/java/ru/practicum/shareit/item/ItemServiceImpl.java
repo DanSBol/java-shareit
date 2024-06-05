@@ -1,100 +1,142 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Component;
-import ru.practicum.shareit.exception.IllegalArgumentException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.*;
+import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.UserService;
-import java.util.*;
-import java.util.stream.Collectors;
+import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserRepository;
 
-@Component
-@Primary
+import java.util.*;
+
+@Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
+    private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
+    private final CommentRepository commentRepository;
 
-    private final Map<Long, Item> items = new HashMap<>();
-    private int id = 0;
-    private final UserService userService;
-
+    @Transactional
     @Override
-    public ItemDto addItem(long userId, Item item) {
-        if (userService.getUser(userId) == null) {
-            throw new NotFoundException("User not found");
-        }
-        if (item.getName().isEmpty()) {
-            throw new IllegalArgumentException("empty item name.");
-        }
-        if (item.getDescription().isEmpty()) {
-            throw new IllegalArgumentException("empty item description.");
-        }
-        if (!item.isAvailable()) {
-            throw new IllegalArgumentException("unavailable item create.");
-        }
-        item.setId(++id);
-        item.setOwner(userId);
-        items.put(item.getId(), item);
-        return ItemMapper.toItemDto(item);
+    public ItemDto addNewItem(long userId, ItemDto itemDto) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found."));
+        Item item = ItemMapper.mapToItem(itemDto, user, null);
+        item = itemRepository.saveAndFlush(item);
+        return ItemMapper.mapToItemDto(item, null, null, new HashSet<>());
     }
 
+    @Transactional
     @Override
-    public ItemDto updateItem(long userId, long itemId, Item item) {
-        if (!items.containsKey(itemId)) {
+    public ItemDto updateItem(long userId, long itemId, ItemDto itemDto) {
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Item not found."));
+        if (!itemRepository.existsById(itemId)) {
             throw new NotFoundException("Item not found.");
         }
-        Item itemFromItems = items.get(itemId);
-        if (itemFromItems.getOwner() != userId) {
+        if (userId != item.getOwner().getId()) {
             throw new NotFoundException("This item has another owner.");
         }
-        if (item.getName() != null) {
-            itemFromItems.setName(item.getName());
+        if (itemDto.getName() != null) {
+            item.setName(itemDto.getName());
         }
-        if (item.getDescription() != null) {
-            itemFromItems.setDescription(item.getDescription());
+        if (itemDto.getDescription() != null) {
+            item.setDescription(itemDto.getDescription());
         }
-        if ((item.getName() == null && item.getDescription() == null) || item.getId() != 0) {
-            itemFromItems.setAvailable(item.isAvailable());
+        if (itemDto.getAvailable() != null) {
+            item.setAvailable(itemDto.getAvailable());
         }
-        items.put(itemId, itemFromItems);
-        return ItemMapper.toItemDto(itemFromItems);
+        item = itemRepository.saveAndFlush(item);
+        List<Booking> bookingsPast = bookingRepository.getBookingOnePast(item);
+        BookingShotDto bookingPast = bookingsPast.isEmpty() ? null :
+                BookingMapper.mapToBookingShotDto(bookingsPast.get(0));
+        List<Booking> bookingsNext = bookingRepository.getBookingOneFutureAllStatuses(item);
+        BookingShotDto bookingNext = bookingsNext.isEmpty() ? null :
+                BookingMapper.mapToBookingShotDto(bookingsNext.get(0));
+        List<Comment> comments = commentRepository.getCommentsForItem(item.getId());
+        Set<CommentDto> commentsDto = new HashSet<CommentDto>(CommentMapper.mapToCommentsDto(comments));
+        return ItemMapper.mapToItemDto(item, bookingPast, bookingNext, commentsDto);
     }
 
     @Override
-    public Collection<ItemDto> getItemsByOwner(long userId) {
-        return items.values().stream()
-            .filter(item -> userId == item.getOwner())
-            .map(ItemMapper::toItemDto)
-            .collect(Collectors.toList());
-    }
-
-    @Override
-    public Long getUserId(long itemId) {
-        if (!items.containsKey(itemId)) {
-            throw new NotFoundException("Item not found.");
+    public void deleteItem(long userId, long itemId) {
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Item not found."));
+        if (userId != item.getOwner().getId()) {
+            throw new NotFoundException("This item has another owner.");
         }
-        return items.get(itemId).getOwner();
+        itemRepository.deleteById(itemId);
     }
 
     @Override
-    public ItemDto getItem(long itemId) {
-        if (!items.containsKey(itemId)) {
-            throw new NotFoundException("Item not found.");
+    public ItemDto getItem(long userId, long itemId) {
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Item not found."));
+        List<Booking> bookingsPast = bookingRepository.getBookingOnePast(item);
+        BookingShotDto bookingPast = bookingsPast.isEmpty() ? null :
+                BookingMapper.mapToBookingShotDto(bookingsPast.get(0));
+        List<Booking> bookingsNext = bookingRepository.getBookingOneFutureApproved(item);
+        BookingShotDto bookingNext = bookingsNext.isEmpty() ? null :
+                BookingMapper.mapToBookingShotDto(bookingsNext.get(0));
+        List<Comment> comments = commentRepository.getCommentsForItem(item.getId());
+        Set<CommentDto> commentsDto = new HashSet<CommentDto>(CommentMapper.mapToCommentsDto(comments));
+        return ItemMapper.mapToItemDto(item, userId == item.getOwner().getId() ? bookingPast : null,
+                userId == item.getOwner().getId() ? bookingNext : null, commentsDto);
+    }
+
+    @Override
+    public List<ItemDto> getItemsByOwner(long userId) {
+        List<Item> items = itemRepository.getItemsByOwner(userId);
+        List<ItemDto> itemsDto = new ArrayList<>();
+        for (Item item : items) {
+            List<Booking> bookingsPast = bookingRepository.getBookingOnePast(item);
+            BookingShotDto bookingPast = bookingsPast.isEmpty() ? null :
+                    BookingMapper.mapToBookingShotDto(bookingsPast.get(0));
+            List<Booking> bookingsNext = bookingRepository.getBookingOneFutureAllStatuses(item);
+            BookingShotDto bookingNext = bookingsNext.isEmpty() ? null :
+                    BookingMapper.mapToBookingShotDto(bookingsNext.get(0));
+            List<Comment> comments = commentRepository.getCommentsForItem(item.getId());
+            Set<CommentDto> commentsDto = new HashSet<CommentDto>(CommentMapper.mapToCommentsDto(comments));
+            itemsDto.add(ItemMapper.mapToItemDto(item, bookingPast, bookingNext, commentsDto));
         }
-        return ItemMapper.toItemDto(items.get(itemId));
+        return itemsDto;
     }
 
     @Override
-    public Collection<ItemDto> search(String text) {
+    public List<ItemDto> search(String text) {
         if (text.isEmpty()) {
-            return new ArrayList<>();
+            return new ArrayList<ItemDto>();
+        } else {
+            List<Item> items = itemRepository.findByAvailableAndDescriptionContainingIgnoreCaseOrderById(true,
+                    text);
+            List<ItemDto> itemsDto = new ArrayList<>();
+            for (Item item : items) {
+                List<Booking> bookingsPast = bookingRepository.getBookingOnePast(item);
+                BookingShotDto bookingPast = bookingsPast.isEmpty() ? null :
+                        BookingMapper.mapToBookingShotDto(bookingsPast.get(0));
+                List<Booking> bookingsNext = bookingRepository.getBookingOneFutureApproved(item);
+                BookingShotDto bookingNext = bookingsNext.isEmpty() ? null :
+                        BookingMapper.mapToBookingShotDto(bookingsNext.get(0));
+                itemsDto.add(ItemMapper.mapToItemDto(item, bookingPast, bookingNext, null));
+            }
+            return itemsDto;
         }
-        return items.values().stream()
-            .filter(item -> (item.getName().toLowerCase().contains(text.toLowerCase()) ||
-                    item.getDescription().toLowerCase().contains(text.toLowerCase())) && item.isAvailable())
-            .map(ItemMapper::toItemDto)
-            .collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public CommentDto addNewComment(long userId, long itemId, CommentDto commentDto) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found."));
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Item not found."));
+        List<Booking> bookings = bookingRepository.getBookingByItemAndBooker(item, user);
+        if (bookings.isEmpty()) {
+            throw new BadRequestException("No one booking before.");
+        }
+        if (commentDto.getText().isEmpty()) {
+            throw new BadRequestException("Empty comment.");
+        }
+        Comment comment = CommentMapper.mapToComment(commentDto, user, item);
+        comment = commentRepository.saveAndFlush(comment);
+        return CommentMapper.mapToCommentDto(comment);
     }
 }
