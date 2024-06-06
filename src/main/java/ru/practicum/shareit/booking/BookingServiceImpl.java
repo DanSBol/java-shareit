@@ -84,32 +84,49 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getBooking(long userId, String stringState, int from, int size) {
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("User not found.");
+    public List<BookingDto> getBookingByOwner(long userId, String stringState, int from, int size) {
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found."));
+        boolean isState = Arrays.stream(BookingStates.values()).anyMatch(element ->
+                element.toString().equals(stringState));
+        if (!isState) {
+            throw new BadRequestException(String.format("Unknown state: %s", stringState));
         }
-        List<Booking> bookings = getBookingsByState(stringState, from, size).toList();
-        return bookings.stream()
-            .filter(x -> x.getBooker().getId() == userId)
+        BookingStates state = BookingStates.valueOf(stringState);
+        Page<Booking> bookings = null;
+        Pageable pageable = PageRequest.of(from, size);
+        switch (state) {
+            case ALL:
+                bookings =  bookingRepository.getBookingByOwner(userId, pageable);
+                break;
+            case CURRENT:
+                bookings =  bookingRepository.getBookingCurrentByOwner(userId, pageable);
+                break;
+            case FUTURE:
+                bookings =  bookingRepository.getBookingFutureByOwner(userId, pageable);
+                break;
+            case PAST:
+                bookings =  bookingRepository.getBookingPastByOwner(userId, pageable);
+                break;
+            case WAITING:
+                bookings =  bookingRepository.getBookingByStatusAndOwner(userId, BookingStatus.WAITING, pageable);
+                break;
+            case REJECTED:
+                bookings =  bookingRepository.getBookingByStatusAndOwner(userId, BookingStatus.REJECTED, pageable);
+                break;
+            default:
+                break;
+        }
+        return bookings.getContent().stream()
             .sorted((o1, o2) -> o2.getStartDate().compareTo(o1.getStartDate()))
             .map(BookingMapper::mapToBookingDto)
             .collect(Collectors.toList());
     }
 
     @Override
-    public List<BookingDto> getBookingByOwner(long userId, String stringState, int from, int size) {
+    public List<BookingDto> getBookingByState(long userId, String stringState, int from, int size) {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException("User not found.");
         }
-        List<Booking> bookings = getBookingsByState(stringState, from, size).toList();
-        return bookings.stream()
-            .filter(x -> x.getItem().getOwner().getId() == userId)
-            .sorted((o1, o2) -> o2.getStartDate().compareTo(o1.getStartDate()))
-            .map(BookingMapper::mapToBookingDto)
-            .collect(Collectors.toList());
-    }
-
-    private Page<Booking> getBookingsByState(String stringState, int from, int size) {
         boolean isState = Arrays.stream(BookingStates.values()).anyMatch(element ->
                 element.toString().equals(stringState));
         if (!isState) {
@@ -140,6 +157,9 @@ public class BookingServiceImpl implements BookingService {
             default:
                 break;
         }
-        return bookings;
+        return bookings.getContent().stream()
+            .sorted((o1, o2) -> o2.getStartDate().compareTo(o1.getStartDate()))
+            .map(BookingMapper::mapToBookingDto)
+            .collect(Collectors.toList());
     }
 }

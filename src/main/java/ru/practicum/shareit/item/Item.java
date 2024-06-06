@@ -33,11 +33,11 @@ public class Item {
     private Request request;
 
     @NotBlank
-    @Column(name = "name")
+    @Column
     private String name;
 
     @NotBlank
-    @Column(name = "description")
+    @Column
     private String description;
 
     @NotNull

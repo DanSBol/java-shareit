@@ -14,12 +14,24 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query(value = "select bo from Booking as bo order by startDate")
     Page<Booking> getBooking(Pageable pageable);
 
+    @Query(value = "select bo from Booking as bo join bo.item as it join it.owner as u where u.id = ?1 " +
+            "order by bo.startDate")
+    Page<Booking> getBookingByOwner(long owner, Pageable pageable);
+
     @Query(value = "select bo from Booking as bo where startDate <= CURRENT_TIMESTAMP() and " +
             "endDate >= CURRENT_TIMESTAMP() order by startDate")
     Page<Booking> getBookingCurrent(Pageable pageable);
 
+    @Query(value = "select bo from Booking as bo join bo.item as it join it.owner as u where u.id = ?1 and " +
+            "bo.startDate <= CURRENT_TIMESTAMP() and bo.endDate >= CURRENT_TIMESTAMP() order by bo.startDate")
+    Page<Booking> getBookingCurrentByOwner(long owner, Pageable pageable);
+
     @Query(value = "select bo from Booking as bo where startDate > CURRENT_TIMESTAMP() order by startDate")
     Page<Booking> getBookingFuture(Pageable pageable);
+
+    @Query(value = "select bo from Booking as bo join bo.item as it join it.owner as u where u.id = ?1 and " +
+            "bo.startDate > CURRENT_TIMESTAMP() order by bo.startDate")
+    Page<Booking> getBookingFutureByOwner(long owner, Pageable pageable);
 
     @Query(value = "select bo from Booking as bo where startDate > CURRENT_TIMESTAMP() and " +
             "bo.item = ?1 order by startDate")
@@ -32,6 +44,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query(value = "select bo from Booking as bo where endDate < CURRENT_TIMESTAMP() and " +
             "status='APPROVED' order by startDate")
     Page<Booking> getBookingPast(Pageable pageable);
+
+    @Query(value = "select bo from Booking as bo join bo.item as it join it.owner as u where u.id = ?1 and " +
+            "bo.endDate < CURRENT_TIMESTAMP() and bo.status='APPROVED' order by bo.startDate")
+    Page<Booking> getBookingPastByOwner(long owner, Pageable pageable);
 
     @Query(value = "select bo from Booking as bo where startDate <= CURRENT_TIMESTAMP() and " +
             "status='APPROVED' and bo.item = ?1 order by endDate desc")
@@ -46,4 +62,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> getBookingByItemAndBooker(Item item, User booker);
 
     Page<Booking> getBookingByStatus(BookingStatus status, Pageable pageable);
+
+    @Query(value = "select bo from Booking as bo join bo.item as it join it.owner as u where u.id = ?1 " +
+            "and bo.status = ?2")
+    Page<Booking> getBookingByStatusAndOwner(long owner, BookingStatus status, Pageable pageable);
 }

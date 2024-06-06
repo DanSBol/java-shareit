@@ -1,41 +1,31 @@
 package ru.practicum.shareit.request;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.item.Item;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "requests")
 @Data
-@Builder(builderClassName = "RequestBuilder")
 @EqualsAndHashCode
+@NoArgsConstructor
 public class Request {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "requestor_id", insertable = false, updatable = false)
-    @Fetch(FetchMode.JOIN)
+    @JoinColumn(name = "requestor_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ToString.Exclude
     private User requestor;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "item", insertable = false, updatable = false)
-    @Fetch(FetchMode.JOIN)
-    private Item item;
+    @NotBlank
     private String description;
-    private LocalDateTime created;
-
-    public static class RequestBuilder {
-        public RequestBuilder() {
-            // Пустой конструктор
-        }
-    }
+    private LocalDateTime created = LocalDateTime.now();
 }
