@@ -38,14 +38,18 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getItem(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemService.getItemsByOwner(userId);
+    public List<ItemDto> getItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                 @RequestParam Integer from,
+                                 @RequestParam Integer size) {
+        return itemService.getItemsByOwner(userId, from, size);
     }
 
     @GetMapping("/search")
     public List<ItemDto> search(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                @RequestParam String text) {
-        return itemService.search(text);
+                                @RequestParam String text,
+                                @RequestParam Integer from,
+                                @RequestParam Integer size) {
+        return itemService.search(text, from, size);
     }
 
     @PostMapping("{itemId}/comment")

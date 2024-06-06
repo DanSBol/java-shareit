@@ -1,6 +1,9 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.BadRequestException;
@@ -81,11 +84,11 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getBooking(long userId, String stringState) {
+    public List<BookingDto> getBooking(long userId, String stringState, int from, int size) {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException("User not found.");
         }
-        List<Booking> bookings = getBookingsByState(stringState);
+        List<Booking> bookings = getBookingsByState(stringState, from, size).toList();
         return bookings.stream()
             .filter(x -> x.getBooker().getId() == userId)
             .sorted((o1, o2) -> o2.getStartDate().compareTo(o1.getStartDate()))
@@ -94,11 +97,11 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getBookingByOwner(long userId, String stringState) {
+    public List<BookingDto> getBookingByOwner(long userId, String stringState, int from, int size) {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException("User not found.");
         }
-        List<Booking> bookings = getBookingsByState(stringState);
+        List<Booking> bookings = getBookingsByState(stringState, from, size).toList();
         return bookings.stream()
             .filter(x -> x.getItem().getOwner().getId() == userId)
             .sorted((o1, o2) -> o2.getStartDate().compareTo(o1.getStartDate()))
@@ -106,32 +109,33 @@ public class BookingServiceImpl implements BookingService {
             .collect(Collectors.toList());
     }
 
-    private List<Booking> getBookingsByState(String stringState) {
+    private Page<Booking> getBookingsByState(String stringState, int from, int size) {
         boolean isState = Arrays.stream(BookingStates.values()).anyMatch(element ->
                 element.toString().equals(stringState));
         if (!isState) {
             throw new BadRequestException(String.format("Unknown state: %s", stringState));
         }
         BookingStates state = BookingStates.valueOf(stringState);
-        List<Booking> bookings = new ArrayList<>();
+        Page<Booking> bookings = null;
+        Pageable pageable = PageRequest.of(from, size);
         switch (state) {
             case ALL:
-                bookings =  bookingRepository.findAll();
+                bookings =  bookingRepository.findAll(pageable);
                 break;
             case CURRENT:
-                bookings =  bookingRepository.getBookingCurrent();
+                bookings =  bookingRepository.getBookingCurrent(pageable);
                 break;
             case FUTURE:
-                bookings =  bookingRepository.getBookingFuture();
+                bookings =  bookingRepository.getBookingFuture(pageable);
                 break;
             case PAST:
-                bookings =  bookingRepository.getBookingPast();
+                bookings =  bookingRepository.getBookingPast(pageable);
                 break;
             case WAITING:
-                bookings =  bookingRepository.getBookingByStatus(BookingStatus.WAITING);
+                bookings =  bookingRepository.getBookingByStatus(BookingStatus.WAITING, pageable);
                 break;
             case REJECTED:
-                bookings =  bookingRepository.getBookingByStatus(BookingStatus.REJECTED);
+                bookings =  bookingRepository.getBookingByStatus(BookingStatus.REJECTED, pageable);
                 break;
             default:
                 break;
