@@ -9,8 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.*;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.request.RequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.request.Request;
 
 import java.util.*;
 
@@ -22,12 +24,15 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final RequestRepository requestRepository;
 
     @Transactional
     @Override
-    public ItemDto addNewItem(long userId, ItemDto itemDto) {
+    public ItemDto addItem(long userId, ItemDto itemDto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found."));
-        Item item = ItemMapper.mapToItem(itemDto, user, null);
+        Request request = itemDto.getRequestId() != null ? requestRepository.findById(itemDto.getRequestId()).orElseThrow(() ->
+                new NotFoundException("Request not found.")) : null;
+        Item item = ItemMapper.mapToItem(itemDto, user, request);
         item = itemRepository.saveAndFlush(item);
         return ItemMapper.mapToItemDto(item, null, null, new HashSet<>());
     }
@@ -51,6 +56,9 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getAvailable() != null) {
             item.setAvailable(itemDto.getAvailable());
         }
+        Request request = itemDto.getRequestId() != null ? requestRepository.findById(itemDto.getRequestId()).orElseThrow(() ->
+                new NotFoundException("Request not found.")) : null;
+        item.setRequest(request);
         item = itemRepository.saveAndFlush(item);
         List<Booking> bookingsPast = bookingRepository.getBookingOnePast(item);
         BookingShotDto bookingPast = bookingsPast.isEmpty() ? null :

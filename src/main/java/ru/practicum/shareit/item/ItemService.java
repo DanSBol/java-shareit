@@ -6,7 +6,7 @@ import java.util.List;
 public interface ItemService {
 
     @Transactional
-    ItemDto addNewItem(long userId, ItemDto itemDto);
+    ItemDto addItem(long userId, ItemDto itemDto);
 
     @Transactional
     ItemDto updateItem(long userId, long itemId, ItemDto itemDto);

@@ -1,6 +1,5 @@
 package ru.practicum.shareit.request;
 
-import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
@@ -13,5 +12,5 @@ public interface RequestService {
 
     List<RequestDto> getRequestsByOwner(long userId);
 
-    Page<RequestDto> getRequestsByParam(long userId, int from, int size);
+    List<RequestDto> getRequestsByParam(long userId, int from, int size);
 }
