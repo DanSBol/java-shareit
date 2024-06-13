@@ -21,5 +21,5 @@ public interface ItemService {
     List<ItemDto> search(String text, int from, int size);
 
     @Transactional
-    CommentDto addNewComment(long userId, long itemId, CommentDto commentDto);
+    CommentDto addComment(long userId, long itemId, CommentDto commentDto);
 }

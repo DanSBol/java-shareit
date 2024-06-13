@@ -1,0 +1,213 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > RequestServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">ru.practicum.shareit.request</a>
+</div>
+
+<h1>Coverage Summary for Class: RequestServiceImpl (ru.practicum.shareit.request)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RequestServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    70%
+  </span>
+  <span class="absValue">
+    (7/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    90,6%
+  </span>
+  <span class="absValue">
+    (29/32)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">RequestServiceImpl$$EnhancerBySpringCGLIB$$dfd8cfd0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    70%
+  </span>
+  <span class="absValue">
+    (7/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    90,6%
+  </span>
+  <span class="absValue">
+    (29/32)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package ru.practicum.shareit.request;
+&nbsp;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.springframework.data.domain.PageRequest;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;import ru.practicum.shareit.booking.*;
+&nbsp;import ru.practicum.shareit.exception.NotFoundException;
+&nbsp;import ru.practicum.shareit.item.*;
+&nbsp;import ru.practicum.shareit.user.User;
+&nbsp;import ru.practicum.shareit.user.UserRepository;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;@Service
+&nbsp;@Transactional(readOnly = true)
+&nbsp;@RequiredArgsConstructor
+&nbsp;public class RequestServiceImpl implements RequestService {
+&nbsp;    private final RequestRepository requestRepository;
+&nbsp;    private final ItemRepository itemRepository;
+&nbsp;    private final UserRepository userRepository;
+&nbsp;    private final BookingRepository bookingRepository;
+&nbsp;    private final CommentRepository commentRepository;
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    @Override
+&nbsp;    public RequestDto addRequest(long userId, RequestDto requestDto) {
+<b class="fc">&nbsp;        User user = userRepository.findById(userId).orElseThrow(() -&gt; new NotFoundException(&quot;User not found.&quot;));</b>
+<b class="fc">&nbsp;        Request request = RequestMapper.mapToRequest(requestDto, user);</b>
+<b class="fc">&nbsp;        request = requestRepository.saveAndFlush(request);</b>
+<b class="fc">&nbsp;        return RequestMapper.mapToRequestDto(request, null);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public RequestDto getRequest(long userId, long requestId) {
+<b class="fc">&nbsp;        userRepository.findById(userId).orElseThrow(() -&gt; new NotFoundException(&quot;User not found.&quot;));</b>
+<b class="fc">&nbsp;        Request request = requestRepository.findById(requestId).orElseThrow(() -&gt; new NotFoundException(&quot;Request not found.&quot;));</b>
+<b class="fc">&nbsp;        List&lt;Item&gt; items = itemRepository.findByRequestId(requestId);</b>
+<b class="fc">&nbsp;        List&lt;ItemDto&gt; itemsDto = new ArrayList&lt;&gt;();</b>
+<b class="pc">&nbsp;        for (Item item : items) {</b>
+<b class="nc">&nbsp;            itemsDto.add(ItemMapper.mapToItemDto(item, null, null, null));</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return RequestMapper.mapToRequestDto(request, itemsDto);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;RequestDto&gt; getRequestsByOwner(long userId) {
+<b class="fc">&nbsp;        userRepository.findById(userId).orElseThrow(() -&gt; new NotFoundException(&quot;User not found.&quot;));</b>
+<b class="fc">&nbsp;        List&lt;Request&gt; requests = requestRepository.getRequestsByOwner(userId);</b>
+<b class="fc">&nbsp;        List&lt;RequestDto&gt; requestsDto = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (Request request : requests) {</b>
+<b class="fc">&nbsp;            List&lt;Item&gt; items = itemRepository.findByRequestId(request.getId());</b>
+<b class="fc">&nbsp;            List&lt;ItemDto&gt; itemsDto = new ArrayList&lt;&gt;();</b>
+<b class="pc">&nbsp;            for (Item item : items) {</b>
+<b class="nc">&nbsp;                itemsDto.add(ItemMapper.mapToItemDto(item, null, null, null));</b>
+&nbsp;            }
+<b class="fc">&nbsp;            requestsDto.add(RequestMapper.mapToRequestDto(request, itemsDto));</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return requestsDto;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;RequestDto&gt; getRequestsByParam(long userId, int from, int size) {
+<b class="fc">&nbsp;        userRepository.findById(userId).orElseThrow(() -&gt; new NotFoundException(&quot;User not found.&quot;));</b>
+<b class="fc">&nbsp;        Pageable pageable = PageRequest.of(from, size);</b>
+<b class="fc">&nbsp;        List&lt;Request&gt; requests = requestRepository.getRequestsByParam(userId, pageable).getContent();</b>
+<b class="fc">&nbsp;        List&lt;RequestDto&gt; requestsDto = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (Request request : requests) {</b>
+<b class="fc">&nbsp;            List&lt;Item&gt; items = itemRepository.findByRequestId(request.getId());</b>
+<b class="fc">&nbsp;            List&lt;ItemDto&gt; itemsDto = new ArrayList&lt;&gt;();</b>
+<b class="pc">&nbsp;            for (Item item : items) {</b>
+<b class="nc">&nbsp;                itemsDto.add(ItemMapper.mapToItemDto(item, null, null, null));</b>
+&nbsp;            }
+<b class="fc">&nbsp;            requestsDto.add(RequestMapper.mapToRequestDto(request, itemsDto));</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return requestsDto;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-17 10:13</div>
+</div>
+</body>
+</html>

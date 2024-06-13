@@ -25,7 +25,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional
     @Override
-    public RequestDto addNewRequest(long userId, RequestDto requestDto) {
+    public RequestDto addRequest(long userId, RequestDto requestDto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found."));
         Request request = RequestMapper.mapToRequest(requestDto, user);
         request = requestRepository.saveAndFlush(request);
