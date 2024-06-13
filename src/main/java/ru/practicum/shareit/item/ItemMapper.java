@@ -22,17 +22,18 @@ public class ItemMapper {
         return item;
     }
 
-    public static ItemDto mapToItemDto(Item item, BookingShotDto lastBooking, BookingShotDto nextBooking, Set<CommentDto> commentsDto) {
-        return new ItemDto.ItemDtoBuilder()
-            .id(item.getId())
-            .userId(item.getOwner().getId())
-            .name(item.getName())
-            .description(item.getDescription())
-            .available(item.getAvailable())
-            .lastBooking(lastBooking)
-            .nextBooking(nextBooking)
-            .comments(commentsDto != null ? commentsDto : new HashSet<>())
-            .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
-            .build();
+    public static ItemDto mapToItemDto(Item item, BookingShotDto lastBooking, BookingShotDto nextBooking,
+                                       Set<CommentDto> commentsDto) {
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(item.getId());
+        itemDto.setUserId(item.getOwner().getId());
+        itemDto.setName(item.getName());
+        itemDto.setDescription(item.getDescription());
+        itemDto.setAvailable(item.getAvailable());
+        itemDto.setLastBooking(lastBooking);
+        itemDto.setNextBooking(nextBooking);
+        itemDto.setComments(commentsDto != null ? commentsDto : new HashSet<>());
+        itemDto.setRequestId(item.getRequest() != null ? item.getRequest().getId() : null);
+        return itemDto;
     }
 }

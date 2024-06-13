@@ -41,9 +41,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto updateItem(long userId, long itemId, ItemDto itemDto) {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Item not found."));
-        if (!itemRepository.existsById(itemId)) {
-            throw new NotFoundException("Item not found.");
-        }
         if (userId != item.getOwner().getId()) {
             throw new NotFoundException("This item has another owner.");
         }
@@ -138,7 +135,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional
     @Override
-    public CommentDto addNewComment(long userId, long itemId, CommentDto commentDto) {
+    public CommentDto addComment(long userId, long itemId, CommentDto commentDto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found."));
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Item not found."));
         List<Booking> bookings = bookingRepository.getBookingByItemAndBooker(item, user);
@@ -148,8 +145,7 @@ public class ItemServiceImpl implements ItemService {
         if (commentDto.getText().isEmpty()) {
             throw new BadRequestException("Empty comment.");
         }
-        Comment comment = CommentMapper.mapToComment(commentDto, user, item);
-        comment = commentRepository.saveAndFlush(comment);
-        return CommentMapper.mapToCommentDto(comment);
+        return CommentMapper.mapToCommentDto(commentRepository.saveAndFlush(CommentMapper.mapToComment(commentDto, user,
+                item)));
     }
 }

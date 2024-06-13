@@ -1,0 +1,154 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > ItemMapper</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">ru.practicum.shareit.item</a>
+</div>
+
+<h1>Coverage Summary for Class: ItemMapper (ru.practicum.shareit.item)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ItemMapper</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (3/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (18/18)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package ru.practicum.shareit.item;
+&nbsp;
+&nbsp;import lombok.AccessLevel;
+&nbsp;import lombok.NoArgsConstructor;
+&nbsp;import ru.practicum.shareit.booking.*;
+&nbsp;import ru.practicum.shareit.request.Request;
+&nbsp;import ru.practicum.shareit.user.User;
+&nbsp;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;@NoArgsConstructor(access = AccessLevel.PRIVATE)
+&nbsp;public class ItemMapper {
+&nbsp;
+&nbsp;    public static Item mapToItem(ItemDto itemDto, User user, Request request) {
+<b class="fc">&nbsp;        Item item = new Item();</b>
+<b class="fc">&nbsp;        item.setName(itemDto.getName());</b>
+<b class="fc">&nbsp;        item.setDescription(itemDto.getDescription());</b>
+<b class="fc">&nbsp;        item.setAvailable(itemDto.getAvailable());</b>
+<b class="fc">&nbsp;        item.setOwner(user);</b>
+<b class="fc">&nbsp;        item.setRequest(request);</b>
+<b class="fc">&nbsp;        return item;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static ItemDto mapToItemDto(Item item, BookingShotDto lastBooking, BookingShotDto nextBooking, Set&lt;CommentDto&gt; commentsDto) {
+<b class="fc">&nbsp;        return new ItemDto.ItemDtoBuilder()</b>
+<b class="fc">&nbsp;            .id(item.getId())</b>
+<b class="fc">&nbsp;            .userId(item.getOwner().getId())</b>
+<b class="fc">&nbsp;            .name(item.getName())</b>
+<b class="fc">&nbsp;            .description(item.getDescription())</b>
+<b class="fc">&nbsp;            .available(item.getAvailable())</b>
+<b class="fc">&nbsp;            .lastBooking(lastBooking)</b>
+<b class="fc">&nbsp;            .nextBooking(nextBooking)</b>
+<b class="fc">&nbsp;            .comments(commentsDto != null ? commentsDto : new HashSet&lt;&gt;())</b>
+<b class="pc">&nbsp;            .requestId(item.getRequest() != null ? item.getRequest().getId() : null)</b>
+<b class="fc">&nbsp;            .build();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-17 10:13</div>
+</div>
+</body>
+</html>
