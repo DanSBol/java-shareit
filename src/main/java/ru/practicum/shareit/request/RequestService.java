@@ -6,7 +6,7 @@ import java.util.List;
 public interface RequestService {
 
     @Transactional
-    RequestDto addNewRequest(long userId, RequestDto requestDto);
+    RequestDto addRequest(long userId, RequestDto requestDto);
 
     RequestDto getRequest(long userId, long requestId);
 

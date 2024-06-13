@@ -1,0 +1,143 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > BookingRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">ru.practicum.shareit.booking</a>
+</div>
+
+<h1>Coverage Summary for Class: BookingRepository (ru.practicum.shareit.booking)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">BookingRepository</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package ru.practicum.shareit.booking;
+&nbsp;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.data.jpa.repository.Query;
+&nbsp;import ru.practicum.shareit.item.Item;
+&nbsp;import ru.practicum.shareit.user.User;
+&nbsp;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;public interface BookingRepository extends JpaRepository&lt;Booking, Long&gt; {
+&nbsp;    @Query(value = &quot;select bo from Booking as bo where bo.booker = ?1 order by startDate desc&quot;)
+&nbsp;    Page&lt;Booking&gt; getBookingByBooker(User booker, Pageable pageable);
+&nbsp;
+&nbsp;    @Query(value = &quot;select bo from Booking as bo join bo.item as it where it.owner = ?1 &quot; +
+&nbsp;            &quot;order by bo.startDate desc&quot;)
+&nbsp;    Page&lt;Booking&gt; getBookingByOwner(User owner, Pageable pageable);
+&nbsp;
+&nbsp;    @Query(value = &quot;select bo from Booking as bo where startDate &lt;= CURRENT_TIMESTAMP() and &quot; +
+&nbsp;            &quot;endDate &gt;= CURRENT_TIMESTAMP() and bo.booker = ?1 &quot; +
+&nbsp;            &quot;order by bo.startDate desc&quot;)
+&nbsp;    Page&lt;Booking&gt; getBookingCurrentByBooker(User booker, Pageable pageable);
+&nbsp;
+&nbsp;    @Query(value = &quot;select bo from Booking as bo join bo.item as it where it.owner = ?1 and &quot; +
+&nbsp;            &quot;bo.startDate &lt;= CURRENT_TIMESTAMP() and bo.endDate &gt;= CURRENT_TIMESTAMP() &quot; +
+&nbsp;            &quot;order by bo.startDate desc&quot;)
+&nbsp;    Page&lt;Booking&gt; getBookingCurrentByOwner(User owner, Pageable pageable);
+&nbsp;
+&nbsp;    @Query(value = &quot;select bo from Booking as bo where startDate &gt; CURRENT_TIMESTAMP() and bo.booker = ?1 &quot; +
+&nbsp;            &quot;order by bo.startDate desc&quot;)
+&nbsp;    Page&lt;Booking&gt; getBookingFutureByBooker(User booker, Pageable pageable);
+&nbsp;
+&nbsp;    @Query(value = &quot;select bo from Booking as bo join bo.item as it where it.owner = ?1 and &quot; +
+&nbsp;            &quot;bo.startDate &gt; CURRENT_TIMESTAMP() &quot; +
+&nbsp;            &quot;order by bo.startDate desc&quot;)
+&nbsp;    Page&lt;Booking&gt; getBookingFutureByOwner(User owner, Pageable pageable);
+&nbsp;
+&nbsp;    @Query(value = &quot;select bo from Booking as bo where startDate &gt; CURRENT_TIMESTAMP() and &quot; +
+&nbsp;            &quot;bo.item = ?1 order by bo.startDate&quot;)
+&nbsp;    List&lt;Booking&gt; getBookingOneFutureAllStatuses(Item item);
+&nbsp;
+&nbsp;    @Query(value = &quot;select bo from Booking as bo where startDate &gt; CURRENT_TIMESTAMP() and &quot; +
+&nbsp;            &quot;bo.item = ?1 and status=&#39;APPROVED&#39; order by bo.startDate&quot;)
+&nbsp;    List&lt;Booking&gt; getBookingOneFutureApproved(Item item);
+&nbsp;
+&nbsp;    @Query(value = &quot;select bo from Booking as bo where endDate &lt; CURRENT_TIMESTAMP() and &quot; +
+&nbsp;            &quot;status=&#39;APPROVED&#39; and bo.booker = ?1 order by bo.startDate desc&quot;)
+&nbsp;    Page&lt;Booking&gt; getBookingPastByBooker(User booker, Pageable pageable);
+&nbsp;
+&nbsp;    @Query(value = &quot;select bo from Booking as bo join bo.item as it where it.owner = ?1 and &quot; +
+&nbsp;            &quot;bo.endDate &lt; CURRENT_TIMESTAMP() and bo.status=&#39;APPROVED&#39; order by bo.startDate desc&quot;)
+&nbsp;    Page&lt;Booking&gt; getBookingPastByOwner(User owner, Pageable pageable);
+&nbsp;
+&nbsp;    @Query(value = &quot;select bo from Booking as bo where startDate &lt;= CURRENT_TIMESTAMP() and &quot; +
+&nbsp;            &quot;status=&#39;APPROVED&#39; and bo.item = ?1 order by bo.endDate desc&quot;)
+&nbsp;    List&lt;Booking&gt; getBookingOnePast(Item item);
+&nbsp;
+&nbsp;    @Query(value = &quot;select count(*) from Booking as bo where item = ?1 and &quot; +
+&nbsp;            &quot;((?2 between startDate and endDate) or (?1 between startDate and endDate)) and status=&#39;APPROVED&#39;&quot;)
+&nbsp;    int getCount(long itemId, LocalDateTime start, LocalDateTime end);
+&nbsp;
+&nbsp;    @Query(value = &quot;select bo from Booking as bo where bo.item = ?1 and bo.booker = ?2 and &quot; +
+&nbsp;            &quot;bo.status = &#39;APPROVED&#39; and bo.endDate &lt; CURRENT_TIMESTAMP() order by bo.startDate desc&quot;)
+&nbsp;    List&lt;Booking&gt; getBookingByItemAndBooker(Item item, User booker);
+&nbsp;
+&nbsp;    @Query(value = &quot;select bo from Booking as bo where bo.booker = ?1 and bo.status = ?2 &quot; +
+&nbsp;            &quot;order by bo.startDate desc&quot;)
+&nbsp;    Page&lt;Booking&gt; getBookingByStatusAndBooker(User booker, BookingStatus status, Pageable pageable);
+&nbsp;
+&nbsp;    @Query(value = &quot;select bo from Booking as bo join bo.item as it where it.owner = ?1 &quot; +
+&nbsp;            &quot;and bo.status = ?2 order by bo.startDate desc&quot;)
+&nbsp;    Page&lt;Booking&gt; getBookingByStatusAndOwner(User owner, BookingStatus status, Pageable pageable);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-17 10:13</div>
+</div>
+</body>
+</html>

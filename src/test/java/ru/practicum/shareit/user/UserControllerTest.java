@@ -6,10 +6,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import ru.practicum.shareit.exception.BadRequestException;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.error.ErrorHandler;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -38,6 +42,7 @@ class UserControllerTest {
     void setUp() {
         mvc = MockMvcBuilders
             .standaloneSetup(controller)
+            .setControllerAdvice(ErrorHandler.class)
             .build();
 
         userDto = new UserDto(
@@ -62,6 +67,22 @@ class UserControllerTest {
             .andExpect(jsonPath("$.email", is(userDto.getEmail())));
 
         verify(userService, times(1)).addUser(any());
+        verifyNoMoreInteractions(userService);
+    }
+
+    @Test
+    void addUser_400_bad_request() throws Exception {
+        when(userService.addUser(Mockito.any(UserDto.class))).thenThrow(BadRequestException.class);
+        //userDto.setEmail("");
+
+        mvc.perform(post("/users")
+                        .content(mapper.writeValueAsString(userDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        verify(userService, times(1)).addUser(Mockito.any(UserDto.class));
         verifyNoMoreInteractions(userService);
     }
 
@@ -95,6 +116,32 @@ class UserControllerTest {
     }
 
     @Test
+    void updateUser_404_not_found() throws Exception {
+
+        UserDto updateForUserDto = new UserDto();
+        updateForUserDto.setName("Alexey");
+        updateForUserDto.setEmail("alexey.doe@mail.com");
+
+        UserDto newUserDto = new UserDto(
+                1L,
+                "Alexey",
+                "alexey.doe@mail.com");
+
+        when(userService.updateUser(eq(999L), any()))
+                .thenThrow(new NotFoundException("User not found."));
+
+        mvc.perform(patch("/users/{userId}", 999L)
+                        .content(mapper.writeValueAsString(updateForUserDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(userService, times(1)).updateUser(eq(999L), any());
+        verifyNoMoreInteractions(userService);
+    }
+
+    @Test
     void deleteUser() throws Exception {
 
         doNothing().when(userService).deleteUser(userDto.getId());
@@ -118,6 +165,18 @@ class UserControllerTest {
             .andExpect(jsonPath("$.email", is(userDto.getEmail())));
 
         verify(userService, times(1)).getUser(userDto.getId());
+        verifyNoMoreInteractions(userService);
+    }
+
+    @Test
+    void getUser_404_not_found() throws Exception {
+
+        when(userService.getUser(anyLong())).thenThrow(new NotFoundException("User not found."));
+
+        mvc.perform(get("/users/{userId}", anyLong()))
+                .andExpect(status().isNotFound());
+
+        verify(userService, times(1)).getUser(anyLong());
         verifyNoMoreInteractions(userService);
     }
 
