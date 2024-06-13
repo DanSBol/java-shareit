@@ -92,7 +92,6 @@ public class BookingServiceImpl implements BookingService {
         }
         BookingStates state = BookingStates.valueOf(stringState);
         Page<Booking> bookings = null;
-        //from = from > 0 ? from - 1 : from;
         if (from < 0 & size < 0) {
             throw new BadRequestException(String.format("Negative from(%d) and size(%d)", from, size));
         }
@@ -102,7 +101,6 @@ public class BookingServiceImpl implements BookingService {
         if (size < 0) {
             throw new BadRequestException(String.format("Negative size: %d", size));
         }
-        //PageRequest pageable = PageRequest.of(from > 0 ? from / size + 1 : 0, size);
         PageRequest pageable = PageRequest.of(from > 0 ? from / size : 0, size);
         switch (state) {
             case ALL:
@@ -133,7 +131,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getBookingByBooker(long userId, String stringState, int from, int size) {
-        User booker = userRepository.findById(userId).orElseThrow(()->new NotFoundException("User not found."));
+        User booker = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found."));
         boolean isState = Arrays.stream(BookingStates.values()).anyMatch(element ->
                 element.toString().equals(stringState));
         if (!isState) {
@@ -141,7 +139,6 @@ public class BookingServiceImpl implements BookingService {
         }
         BookingStates state = BookingStates.valueOf(stringState);
         Page<Booking> bookings = null;
-        //from = from > 0 ? from - 1 : from;
         if (from < 0 & size < 0) {
             throw new BadRequestException(String.format("Negative from(%d) and size(%d)", from, size));
         }
@@ -151,8 +148,7 @@ public class BookingServiceImpl implements BookingService {
         if (size < 0) {
             throw new BadRequestException(String.format("Negative size: %d", size));
         }
-        //PageRequest pageable = PageRequest.of(from > 0 ? from / size + 1 : 0, size);
-        PageRequest pageable = PageRequest.of(from > 0 ? from / size: 0, size);
+        PageRequest pageable = PageRequest.of(from > 0 ? from / size : 0, size);
         switch (state) {
             case ALL:
                 bookings =  bookingRepository.getBookingByBooker(booker, pageable);
