@@ -132,7 +132,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getBookingByBooker(long userId, String stringState, int from, int size) {
         User booker = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found."));
-        boolean isState = Arrays.stream(BookingStates.values()).anyMatch(element -> 
+        boolean isState = Arrays.stream(BookingStates.values()).anyMatch(element ->
                 element.toString().equals(stringState));
         if (!isState) {
             throw new BadRequestException(String.format("Unknown state: %s", stringState));
