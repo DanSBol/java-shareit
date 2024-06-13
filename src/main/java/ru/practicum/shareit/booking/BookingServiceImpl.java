@@ -148,7 +148,7 @@ public class BookingServiceImpl implements BookingService {
         if (size < 0) {
             throw new BadRequestException(String.format("Negative size: %d", size));
         }
-        PageRequest pageable = PageRequest.of(from > 0 ? from / size: 0, size);
+        PageRequest pageable = PageRequest.of(from > 0 ? from / size : 0, size);
         switch (state) {
             case ALL:
                 bookings =  bookingRepository.getBookingByBooker(booker, pageable);
