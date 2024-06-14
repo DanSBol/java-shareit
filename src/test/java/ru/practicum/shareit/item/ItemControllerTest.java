@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -169,6 +170,56 @@ class ItemControllerTest {
             .andExpect(jsonPath("$[0].available", is(itemDto.getAvailable())));
 
         verify(itemService, times(1)).getItemsByOwner(eq(1L), eq(0), eq(1000));
+        verifyNoMoreInteractions(itemService);
+    }
+
+    @Test
+    void search() throws Exception {
+        when(itemService.search(eq("oven"), eq(0), eq(1000)))
+                .thenReturn(List.of(itemDto));
+
+        mvc.perform(get("/items/search")
+                        .headers(headers)
+                        .param("text", "oven")
+                        .param("from", "0")
+                        .param("size", "1000"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].id", is(itemDto.getId()), Long.class))
+                .andExpect(jsonPath("$[0].name", is(itemDto.getName())))
+                .andExpect(jsonPath("$[0].description", is(itemDto.getDescription())))
+                .andExpect(jsonPath("$[0].available", is(itemDto.getAvailable())));
+
+        verify(itemService, times(1)).search(eq("oven"), eq(0), eq(1000));
+        verifyNoMoreInteractions(itemService);
+    }
+
+    @Test
+    void addNewComment() throws Exception {
+        CommentDto putCommentDto = new CommentDto();
+        putCommentDto.setItemId(itemDto.getId());
+        putCommentDto.setAuthorName("Alexey");
+        putCommentDto.setText("Cool");
+
+        CommentDto getCommentDto = putCommentDto;
+        getCommentDto.setId(1L);
+
+        when(itemService.addNewComment(eq(1L), eq(itemDto.getId()), any()))
+                .thenReturn(getCommentDto);
+
+        mvc.perform(post("/items/{itemId}/comment", itemDto.getId())
+                        .headers(headers)
+                        .content(mapper.writeValueAsString(putCommentDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(getCommentDto.getId()), Long.class))
+                .andExpect(jsonPath("$.authorName", is(getCommentDto.getAuthorName())))
+                .andExpect(jsonPath("$.itemId", is(getCommentDto.getItemId()), Long.class))
+                .andExpect(jsonPath("$.text", is(getCommentDto.getText())));
+
+        verify(itemService, times(1)).addNewComment(eq(1L), eq(itemDto.getId()), any());
         verifyNoMoreInteractions(itemService);
     }
 }

@@ -43,19 +43,19 @@ class ItemControllerTestWithContext {
     @BeforeEach
     void setUp(WebApplicationContext wac) {
         mvc = MockMvcBuilders
-            .webAppContextSetup(wac)
-            .build();
+                .webAppContextSetup(wac)
+                .build();
 
         itemDto = new ItemDto(
-            1L,
-            1L,
-            "Microwave oven",
-            "Power compact microwave oven",
-            true,
-            null,
-            null,
-            null,
-            null);
+                1L,
+                1L,
+                "Microwave oven",
+                "Power compact microwave oven",
+                true,
+                null,
+                null,
+                null,
+                null);
 
         headers = new HttpHeaders();
         headers.add("X-Sharer-User-Id", "1");
@@ -69,19 +69,19 @@ class ItemControllerTestWithContext {
         forQueryItemDto.setAvailable(true);
 
         when(itemService.addItem(eq(1L), any()))
-            .thenReturn(itemDto);
+                .thenReturn(itemDto);
 
         mvc.perform(post("/items")
-                .headers(headers)
-                .content(mapper.writeValueAsString(forQueryItemDto))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
-            .andExpect(jsonPath("$.name", is(itemDto.getName())))
-            .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
-            .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
+                        .headers(headers)
+                        .content(mapper.writeValueAsString(forQueryItemDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
+                .andExpect(jsonPath("$.name", is(itemDto.getName())))
+                .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
+                .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
 
         verify(itemService, times(1)).addItem(eq(1L), any());
         verifyNoMoreInteractions(itemService);
@@ -95,30 +95,30 @@ class ItemControllerTestWithContext {
         updateForItemDto.setAvailable(false);
 
         ItemDto newItemDto = new ItemDto(
-            1L,
-            1L,
-            "Oven",
-            "Old oven",
-            false,
-            null,
-            null,
-            null,
-            null);
+                1L,
+                1L,
+                "Oven",
+                "Old oven",
+                false,
+                null,
+                null,
+                null,
+                null);
 
         when(itemService.updateItem(eq(1L), eq(itemDto.getId()), any()))
-            .thenReturn(newItemDto);
+                .thenReturn(newItemDto);
 
         mvc.perform(patch("/items/{itemId}", itemDto.getId())
-                .headers(headers)
-                .content(mapper.writeValueAsString(updateForItemDto))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id", is(newItemDto.getId()), Long.class))
-            .andExpect(jsonPath("$.name", is(newItemDto.getName())))
-            .andExpect(jsonPath("$.description", is(newItemDto.getDescription())))
-            .andExpect(jsonPath("$.available", is(newItemDto.getAvailable())));
+                        .headers(headers)
+                        .content(mapper.writeValueAsString(updateForItemDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(newItemDto.getId()), Long.class))
+                .andExpect(jsonPath("$.name", is(newItemDto.getName())))
+                .andExpect(jsonPath("$.description", is(newItemDto.getDescription())))
+                .andExpect(jsonPath("$.available", is(newItemDto.getAvailable())));
 
         verify(itemService, times(1)).updateItem(eq(1L), eq(itemDto.getId()), any());
         verifyNoMoreInteractions(itemService);
@@ -129,8 +129,8 @@ class ItemControllerTestWithContext {
         doNothing().when(itemService).deleteItem(eq(1L), eq(itemDto.getId()));
 
         mvc.perform(delete("/items/{itemId}", itemDto.getId())
-                .headers(headers))
-            .andExpect(status().isOk());
+                        .headers(headers))
+                .andExpect(status().isOk());
 
         verify(itemService, times(1)).deleteItem(eq(1L), eq(itemDto.getId()));
         verifyNoMoreInteractions(itemService);
@@ -139,15 +139,15 @@ class ItemControllerTestWithContext {
     @Test
     void getItem() throws Exception {
         when(itemService.getItem(eq(1L), eq(itemDto.getId())))
-            .thenReturn(itemDto);
+                .thenReturn(itemDto);
 
         mvc.perform(get("/items/{itemId}", itemDto.getId())
-                .headers(headers))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
-            .andExpect(jsonPath("$.name", is(itemDto.getName())))
-            .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
-            .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
+                        .headers(headers))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
+                .andExpect(jsonPath("$.name", is(itemDto.getName())))
+                .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
+                .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
 
         verify(itemService, times(1)).getItem(eq(1L), eq(itemDto.getId()));
         verifyNoMoreInteractions(itemService);
@@ -156,20 +156,70 @@ class ItemControllerTestWithContext {
     @Test
     void getItems() throws Exception {
         when(itemService.getItemsByOwner(eq(1L), eq(0), eq(1000)))
-            .thenReturn(List.of(itemDto));
+                .thenReturn(List.of(itemDto));
 
         mvc.perform(get("/items")
-                .headers(headers)
-                .param("from", "0")
-                .param("size", "1000"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(1)))
-            .andExpect(jsonPath("$[0].id", is(itemDto.getId()), Long.class))
-            .andExpect(jsonPath("$[0].name", is(itemDto.getName())))
-            .andExpect(jsonPath("$[0].description", is(itemDto.getDescription())))
-            .andExpect(jsonPath("$[0].available", is(itemDto.getAvailable())));
+                        .headers(headers)
+                        .param("from", "0")
+                        .param("size", "1000"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].id", is(itemDto.getId()), Long.class))
+                .andExpect(jsonPath("$[0].name", is(itemDto.getName())))
+                .andExpect(jsonPath("$[0].description", is(itemDto.getDescription())))
+                .andExpect(jsonPath("$[0].available", is(itemDto.getAvailable())));
 
         verify(itemService, times(1)).getItemsByOwner(eq(1L), eq(0), eq(1000));
+        verifyNoMoreInteractions(itemService);
+    }
+
+    @Test
+    void search() throws Exception {
+        when(itemService.search(eq("oven"), eq(0), eq(1000)))
+                .thenReturn(List.of(itemDto));
+
+        mvc.perform(get("/items/search")
+                        .headers(headers)
+                        .param("text", "oven")
+                        .param("from", "0")
+                        .param("size", "1000"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].id", is(itemDto.getId()), Long.class))
+                .andExpect(jsonPath("$[0].name", is(itemDto.getName())))
+                .andExpect(jsonPath("$[0].description", is(itemDto.getDescription())))
+                .andExpect(jsonPath("$[0].available", is(itemDto.getAvailable())));
+
+        verify(itemService, times(1)).search(eq("oven"), eq(0), eq(1000));
+        verifyNoMoreInteractions(itemService);
+    }
+
+    @Test
+    void addNewComment() throws Exception {
+        CommentDto putCommentDto = new CommentDto();
+        putCommentDto.setItemId(itemDto.getId());
+        putCommentDto.setAuthorName("Alexey");
+        putCommentDto.setText("Cool");
+
+        CommentDto getCommentDto = putCommentDto;
+        getCommentDto.setId(1L);
+
+        when(itemService.addNewComment(eq(1L), eq(itemDto.getId()), any()))
+                .thenReturn(getCommentDto);
+
+        mvc.perform(post("/items/{itemId}/comment", itemDto.getId())
+                        .headers(headers)
+                        .content(mapper.writeValueAsString(putCommentDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(getCommentDto.getId()), Long.class))
+                .andExpect(jsonPath("$.authorName", is(getCommentDto.getAuthorName())))
+                .andExpect(jsonPath("$.itemId", is(getCommentDto.getItemId()), Long.class))
+                .andExpect(jsonPath("$.text", is(getCommentDto.getText())));
+
+        verify(itemService, times(1)).addNewComment(eq(1L), eq(itemDto.getId()), any());
         verifyNoMoreInteractions(itemService);
     }
 }
