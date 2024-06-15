@@ -20,10 +20,7 @@ public class CommentDtoJsonTest {
 
     @Test
     void testCommentDto() throws Exception {
-        BookingShotDto nextBooking = new BookingShotDto(3L, 1L);
-        BookingShotDto lastBooking = new BookingShotDto(1L, 1L);
         String created = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-
         CommentDto commentDto = new CommentDto(
                 1L,
                 "Alexey",
