@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import ru.practicum.shareit.booking.BookingShotDto;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -36,6 +37,8 @@ class ItemControllerTest {
     private MockMvc mvc;
 
     private ItemDto itemDto;
+    private BookingShotDto lastBooking;
+    private BookingShotDto nextBooking;
 
     private HttpHeaders headers;
 
@@ -45,14 +48,17 @@ class ItemControllerTest {
             .standaloneSetup(controller)
             .build();
 
+        lastBooking = new BookingShotDto(1L, 1L);
+        nextBooking = new BookingShotDto(3L, 1L);
+
         itemDto = new ItemDto(
             1L,
             1L,
             "Microwave oven",
             "Power compact microwave oven",
             true,
-            null,
-            null,
+            lastBooking,
+            nextBooking,
             null,
             null);
 
@@ -80,7 +86,13 @@ class ItemControllerTest {
             .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
             .andExpect(jsonPath("$.name", is(itemDto.getName())))
             .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
-            .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
+            .andExpect(jsonPath("$.available", is(itemDto.getAvailable())))
+            .andExpect(jsonPath("$.lastBooking.id", is(itemDto.getLastBooking().getId()), Long.class))
+            .andExpect(jsonPath("$.lastBooking.bookerId",
+                    is(itemDto.getLastBooking().getBookerId()), Long.class))
+            .andExpect(jsonPath("$.nextBooking.id", is(itemDto.getNextBooking().getId()), Long.class))
+            .andExpect(jsonPath("$.nextBooking.bookerId",
+                    is(itemDto.getNextBooking().getBookerId()), Long.class));
 
         verify(itemService, times(1)).addItem(eq(1L), any());
         verifyNoMoreInteractions(itemService);
@@ -99,8 +111,8 @@ class ItemControllerTest {
             "Oven",
             "Old oven",
             false,
-            null,
-            null,
+            lastBooking,
+            nextBooking,
             null,
             null);
 
@@ -117,7 +129,13 @@ class ItemControllerTest {
             .andExpect(jsonPath("$.id", is(newItemDto.getId()), Long.class))
             .andExpect(jsonPath("$.name", is(newItemDto.getName())))
             .andExpect(jsonPath("$.description", is(newItemDto.getDescription())))
-            .andExpect(jsonPath("$.available", is(newItemDto.getAvailable())));
+            .andExpect(jsonPath("$.available", is(newItemDto.getAvailable())))
+            .andExpect(jsonPath("$.lastBooking.id", is(itemDto.getLastBooking().getId()), Long.class))
+            .andExpect(jsonPath("$.lastBooking.bookerId",
+                    is(itemDto.getLastBooking().getBookerId()), Long.class))
+            .andExpect(jsonPath("$.nextBooking.id", is(itemDto.getNextBooking().getId()), Long.class))
+            .andExpect(jsonPath("$.nextBooking.bookerId",
+                    is(itemDto.getNextBooking().getBookerId()), Long.class));
 
         verify(itemService, times(1)).updateItem(eq(1L), eq(itemDto.getId()), any());
         verifyNoMoreInteractions(itemService);
@@ -146,7 +164,13 @@ class ItemControllerTest {
             .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
             .andExpect(jsonPath("$.name", is(itemDto.getName())))
             .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
-            .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
+            .andExpect(jsonPath("$.available", is(itemDto.getAvailable())))
+            .andExpect(jsonPath("$.lastBooking.id", is(itemDto.getLastBooking().getId()), Long.class))
+            .andExpect(jsonPath("$.lastBooking.bookerId",
+                    is(itemDto.getLastBooking().getBookerId()), Long.class))
+            .andExpect(jsonPath("$.nextBooking.id", is(itemDto.getNextBooking().getId()), Long.class))
+            .andExpect(jsonPath("$.nextBooking.bookerId",
+                    is(itemDto.getNextBooking().getBookerId()), Long.class));
 
         verify(itemService, times(1)).getItem(eq(1L), eq(itemDto.getId()));
         verifyNoMoreInteractions(itemService);
@@ -166,7 +190,13 @@ class ItemControllerTest {
             .andExpect(jsonPath("$[0].id", is(itemDto.getId()), Long.class))
             .andExpect(jsonPath("$[0].name", is(itemDto.getName())))
             .andExpect(jsonPath("$[0].description", is(itemDto.getDescription())))
-            .andExpect(jsonPath("$[0].available", is(itemDto.getAvailable())));
+            .andExpect(jsonPath("$[0].available", is(itemDto.getAvailable())))
+            .andExpect(jsonPath("$[0].lastBooking.id", is(itemDto.getLastBooking().getId()), Long.class))
+            .andExpect(jsonPath("$[0].lastBooking.bookerId",
+                    is(itemDto.getLastBooking().getBookerId()), Long.class))
+            .andExpect(jsonPath("$[0].nextBooking.id", is(itemDto.getNextBooking().getId()), Long.class))
+            .andExpect(jsonPath("$[0].nextBooking.bookerId",
+                    is(itemDto.getNextBooking().getBookerId()), Long.class));
 
         verify(itemService, times(1)).getItemsByOwner(eq(1L), eq(0), eq(1000));
         verifyNoMoreInteractions(itemService);
@@ -187,7 +217,13 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$[0].id", is(itemDto.getId()), Long.class))
                 .andExpect(jsonPath("$[0].name", is(itemDto.getName())))
                 .andExpect(jsonPath("$[0].description", is(itemDto.getDescription())))
-                .andExpect(jsonPath("$[0].available", is(itemDto.getAvailable())));
+                .andExpect(jsonPath("$[0].available", is(itemDto.getAvailable())))
+                .andExpect(jsonPath("$[0].lastBooking.id", is(itemDto.getLastBooking().getId()), Long.class))
+                .andExpect(jsonPath("$[0].lastBooking.bookerId",
+                        is(itemDto.getLastBooking().getBookerId()), Long.class))
+                .andExpect(jsonPath("$[0].nextBooking.id", is(itemDto.getNextBooking().getId()), Long.class))
+                .andExpect(jsonPath("$[0].nextBooking.bookerId",
+                        is(itemDto.getNextBooking().getBookerId()), Long.class));
 
         verify(itemService, times(1)).search(eq("oven"), eq(0), eq(1000));
         verifyNoMoreInteractions(itemService);

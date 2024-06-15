@@ -48,6 +48,8 @@ class BookingControllerTest {
     private UserDto userDto;
     private ItemDto itemDto;
     private BookingDto bookingDto;
+    private BookingShotDto lastBooking;
+    private BookingShotDto nextBooking;
 
     private HttpHeaders headers;
 
@@ -62,14 +64,17 @@ class BookingControllerTest {
                 "John",
                 "john.doe@mail.com");
 
+        lastBooking = new BookingShotDto(1L, userDto.getId());
+        nextBooking = new BookingShotDto(3L, userDto.getId());
+
         itemDto = new ItemDto(
-                1L,
-                1L,
+                2L,
+                userDto.getId(),
                 "Microwave oven",
                 "Power compact microwave oven",
                 true,
-                null,
-                null,
+                lastBooking,
+                nextBooking,
                 null,
                 null);
 
@@ -172,7 +177,7 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$.booker", is(bookingDto.getBooker()), UserDto.class))
                 .andExpect(jsonPath("$.status", is(bookingDto.getStatus())));
 
-        verify(bookingService, times(1)).getBooking(eq(userDto.getId()), eq(itemDto.getId()));
+        verify(bookingService, times(1)).getBooking(eq(userDto.getId()), eq(bookingDto.getId()));
         verifyNoMoreInteractions(bookingService);
     }
 

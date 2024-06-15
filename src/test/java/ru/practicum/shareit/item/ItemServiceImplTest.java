@@ -8,7 +8,6 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.practicum.shareit.booking.BookingDto;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.BookingServiceImpl;
-import ru.practicum.shareit.config.AppConfig;
 import ru.practicum.shareit.config.PersistenceConfig;
 import ru.practicum.shareit.user.*;
 
@@ -26,7 +25,7 @@ import static org.hamcrest.Matchers.*;
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @TestPropertySource(properties = { "db.name=test"})
-@SpringJUnitConfig({AppConfig.class, PersistenceConfig.class, UserServiceImpl.class, ItemServiceImpl.class, BookingServiceImpl.class})
+@SpringJUnitConfig({PersistenceConfig.class, UserServiceImpl.class, ItemServiceImpl.class, BookingServiceImpl.class})
 class ItemServiceImplTest {
 
     private final EntityManager em;
@@ -205,9 +204,9 @@ class ItemServiceImplTest {
 
         Thread.sleep(1000);
 
-        CommentDto commentDto = new CommentDto();
-        commentDto.setAuthorName(bookerDto.getName());
-        commentDto.setText("Cool");
+        CommentDto commentDto = CommentDto.builder()
+                .text("Cool")
+                .build();
         commentDto = itemService.addComment(bookerDto.getId(), itemDto.getId(), commentDto);
 
         // then
