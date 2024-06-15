@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.error.ErrorHandler;
 
@@ -63,6 +64,22 @@ class UserControllerTest {
             .andExpect(jsonPath("$.id", is(userDto.getId()), Long.class))
             .andExpect(jsonPath("$.name", is(userDto.getName())))
             .andExpect(jsonPath("$.email", is(userDto.getEmail())));
+
+        verify(userService, times(1)).addUser(any());
+        verifyNoMoreInteractions(userService);
+    }
+
+    @Test
+    void addUser_400_bad_request() throws Exception {
+        when(userService.addUser(any())).thenThrow(BadRequestException.class);
+        userDto.setEmail("");
+
+        mvc.perform(post("/users")
+                        .content(mapper.writeValueAsString(userDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
 
         verify(userService, times(1)).addUser(any());
         verifyNoMoreInteractions(userService);
