@@ -11,7 +11,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import ru.practicum.shareit.config.WebConfig;
-import ru.practicum.shareit.user.UserController;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -23,7 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringJUnitWebConfig({ UserController.class, ItemControllerTestConfig.class, WebConfig.class})
+@SpringJUnitWebConfig({ItemController.class, ItemControllerTestConfig.class, WebConfig.class})
 class ItemControllerTestWithContext {
     private final ObjectMapper mapper = new ObjectMapper();
 

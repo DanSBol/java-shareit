@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringJUnitWebConfig({ RequestController.class, RequestControllerTestConfig.class, WebConfig.class})
+@SpringJUnitWebConfig({RequestController.class, RequestControllerTestConfig.class, WebConfig.class})
 class RequestControllerTestWithContext {
     private final ObjectMapper mapper = new ObjectMapper();
 

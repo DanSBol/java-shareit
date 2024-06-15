@@ -8,6 +8,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.practicum.shareit.booking.BookingDto;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.BookingServiceImpl;
+import ru.practicum.shareit.config.AppConfig;
 import ru.practicum.shareit.config.PersistenceConfig;
 import ru.practicum.shareit.user.*;
 
@@ -25,7 +26,7 @@ import static org.hamcrest.Matchers.*;
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @TestPropertySource(properties = { "db.name=test"})
-@SpringJUnitConfig({PersistenceConfig.class, UserServiceImpl.class, ItemServiceImpl.class, BookingServiceImpl.class})
+@SpringJUnitConfig({AppConfig.class, PersistenceConfig.class, UserServiceImpl.class, ItemServiceImpl.class, BookingServiceImpl.class})
 class ItemServiceImplTest {
 
     private final EntityManager em;

@@ -10,6 +10,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.NotFoundExceptionHandler;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -38,6 +40,7 @@ class UserControllerTest {
     void setUp() {
         mvc = MockMvcBuilders
             .standaloneSetup(controller)
+            .setControllerAdvice(NotFoundExceptionHandler.class)
             .build();
 
         userDto = new UserDto(
@@ -118,6 +121,18 @@ class UserControllerTest {
             .andExpect(jsonPath("$.email", is(userDto.getEmail())));
 
         verify(userService, times(1)).getUser(userDto.getId());
+        verifyNoMoreInteractions(userService);
+    }
+
+    @Test
+    void getUser_404_not_found() throws Exception {
+
+        when(userService.getUser(1)).thenThrow(NotFoundException.class);
+
+        mvc.perform(get("/users/{userId}", 1))
+                .andExpect(status().isNotFound());
+
+        verify(userService, times(1)).getUser(1);
         verifyNoMoreInteractions(userService);
     }
 

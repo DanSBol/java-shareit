@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import ru.practicum.shareit.config.AppConfig;
 import ru.practicum.shareit.config.PersistenceConfig;
 
 import javax.persistence.EntityManager;
@@ -20,7 +21,7 @@ import static org.hamcrest.Matchers.*;
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @TestPropertySource(properties = { "db.name=test"})
-@SpringJUnitConfig({PersistenceConfig.class, UserServiceImpl.class})
+@SpringJUnitConfig({AppConfig.class, PersistenceConfig.class, UserServiceImpl.class})
 class UserServiceImplTest {
 
     private final EntityManager em;
