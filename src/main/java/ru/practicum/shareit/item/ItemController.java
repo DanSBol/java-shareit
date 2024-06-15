@@ -56,6 +56,6 @@ public class ItemController {
     public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Long userId,
                                  @PathVariable Long itemId,
                                  @RequestBody CommentDto commentDto) {
-        return itemService.addNewComment(userId, itemId, commentDto);
+        return itemService.addComment(userId, itemId, commentDto);
     }
 }

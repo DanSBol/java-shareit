@@ -138,7 +138,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional
     @Override
-    public CommentDto addNewComment(long userId, long itemId, CommentDto commentDto) {
+    public CommentDto addComment(long userId, long itemId, CommentDto commentDto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found."));
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Item not found."));
         List<Booking> bookings = bookingRepository.getBookingByItemAndBooker(item, user);

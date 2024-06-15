@@ -45,6 +45,62 @@ class UserServiceImplTest {
     }
 
     @Test
+    void updateUser() {
+        // given
+        UserDto originUserDto = makeUserDto("Пётр", "petr@ya.ru");
+        UserDto updatedUserDto = makeUserDto("Алексей", "alexey@ya.ru");
+
+        // when
+        originUserDto = service.addUser(originUserDto);
+        service.updateUser(originUserDto.getId(), updatedUserDto);
+
+        // then
+        TypedQuery<User> query = em.createQuery("Select u from User u where u.email = :email", User.class);
+        User user = query.setParameter("email", updatedUserDto.getEmail())
+                .getSingleResult();
+
+        assertThat(user.getId(), notNullValue());
+        assertThat(user.getName(), equalTo(updatedUserDto.getName()));
+        assertThat(user.getEmail(), equalTo(updatedUserDto.getEmail()));
+    }
+
+    @Test
+    void deleteUser() {
+        // given
+        UserDto userDto = makeUserDto("Пётр", "petr@ya.ru");
+
+        // when
+        userDto = service.addUser(userDto);
+        service.deleteUser(userDto.getId());
+
+        // then
+        TypedQuery<User> query = em.createQuery("Select u from User u where u.email = :email", User.class);
+        List<User> user = query.setParameter("email", userDto.getEmail())
+                .getResultList();
+
+        assertThat(String.valueOf(user.isEmpty()), true);
+    }
+
+    @Test
+    void getUser() {
+        // given
+        UserDto userDto = makeUserDto("Пётр", "petr@ya.ru");
+
+        // when
+        userDto = service.addUser(userDto);
+        UserDto getUserDto = service.getUser(userDto.getId());
+
+        // then
+        TypedQuery<User> query = em.createQuery("Select u from User u where u.email = :email", User.class);
+        User user = query.setParameter("email", userDto.getEmail())
+                .getSingleResult();
+
+        assertThat(user.getId(), notNullValue());
+        assertThat(user.getName(), equalTo(getUserDto.getName()));
+        assertThat(user.getEmail(), equalTo(getUserDto.getEmail()));
+    }
+
+    @Test
     void getAllUsers() {
         // given
         List<UserDto> sourceUsers = List.of(

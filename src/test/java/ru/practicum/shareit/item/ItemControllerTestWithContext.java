@@ -204,7 +204,7 @@ class ItemControllerTestWithContext {
         CommentDto getCommentDto = putCommentDto;
         getCommentDto.setId(1L);
 
-        when(itemService.addNewComment(eq(1L), eq(itemDto.getId()), any()))
+        when(itemService.addComment(eq(1L), eq(itemDto.getId()), any()))
                 .thenReturn(getCommentDto);
 
         mvc.perform(post("/items/{itemId}/comment", itemDto.getId())
@@ -219,7 +219,7 @@ class ItemControllerTestWithContext {
                 .andExpect(jsonPath("$.itemId", is(getCommentDto.getItemId()), Long.class))
                 .andExpect(jsonPath("$.text", is(getCommentDto.getText())));
 
-        verify(itemService, times(1)).addNewComment(eq(1L), eq(itemDto.getId()), any());
+        verify(itemService, times(1)).addComment(eq(1L), eq(itemDto.getId()), any());
         verifyNoMoreInteractions(itemService);
     }
 }
