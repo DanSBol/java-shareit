@@ -43,7 +43,14 @@ class BookingServiceImplTest {
                 makeItemDto("Microwave oven", "Power compact microwave oven", true));
         BookingDto bookingDto = makeBookingDto(bookerDto, itemDto, LocalDateTime.now().plusSeconds(1),
                 LocalDateTime.now().plusSeconds(2));
-        bookingDto = bookingService.addBooking(bookerDto.getId(), bookingDto);
+        BookingDto getBookingDto = bookingService.addBooking(bookerDto.getId(), bookingDto);
+
+        assertThat(getBookingDto.getId(), notNullValue());
+        assertThat(getBookingDto.getBooker(), equalTo(bookingDto.getBooker()));
+        assertThat(getBookingDto.getItem(), equalTo(bookingDto.getItem()));
+        assertThat(getBookingDto.getStart(), equalTo(bookingDto.getStart()));
+        assertThat(getBookingDto.getEnd(), equalTo(bookingDto.getEnd()));
+        assertThat(getBookingDto.getStatus(), equalTo(BookingStatus.WAITING.toString()));
 
         // then
         TypedQuery<User> userQuery = em.createQuery("Select us from User us where us.id = :id", User.class);
@@ -56,14 +63,14 @@ class BookingServiceImplTest {
 
         TypedQuery<Booking> bookingQuery = em.createQuery("Select bo from Booking bo " +
                 "join Item it on bo.item = it.id join User us on bo.booker = us.id where bo.id = :id", Booking.class);
-        Booking booking = bookingQuery.setParameter("id", bookingDto.getId())
+        Booking booking = bookingQuery.setParameter("id", getBookingDto.getId())
                 .getSingleResult();
 
         assertThat(booking.getId(), notNullValue());
         assertThat(booking.getBooker(), equalTo(booker));
         assertThat(booking.getItem(), equalTo(item));
-        assertThat(booking.getStartDate(), equalTo(LocalDateTime.parse(bookingDto.getStart())));
-        assertThat(booking.getEndDate(), equalTo(LocalDateTime.parse(bookingDto.getEnd())));
+        assertThat(booking.getStartDate(), equalTo(LocalDateTime.parse(getBookingDto.getStart())));
+        assertThat(booking.getEndDate(), equalTo(LocalDateTime.parse(getBookingDto.getEnd())));
         assertThat(booking.getStatus(), equalTo(BookingStatus.WAITING));
     }
 
