@@ -15,9 +15,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
+import java.util.List;
+
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -50,6 +52,73 @@ class RequestServiceImplTest {
         assertThat(request.getId(), notNullValue());
         assertThat(request.getRequestor(), equalTo(requestor));
         assertThat(request.getDescription(), equalTo(requestDto.getDescription()));
+    }
+
+    @Test
+    void getRequest() {
+        // given & when
+        UserDto userDto = makeUserDto("Alexey", "alexey@ya.ru");
+        userDto = userService.addUser(userDto);
+        RequestDto requestDto = makeRequestDto("TV");
+        requestDto = requestService.addRequest(userDto.getId(), requestDto);
+        RequestDto getRequestDto = requestService.getRequest(userDto.getId(), requestDto.getId());
+
+        assertThat(getRequestDto.getId(), equalTo(requestDto.getId()));
+        assertThat(getRequestDto.getUserId(), equalTo(requestDto.getUserId()));
+        assertThat(getRequestDto.getDescription(), equalTo(requestDto.getDescription()));
+    }
+
+    @Test
+    void getRequestsByOwner() {
+        // given & when
+        UserDto userDto = makeUserDto("Alexey", "alexey@ya.ru");
+        userDto = userService.addUser(userDto);
+
+        List<RequestDto> sourceRequestDto = List.of(
+                makeRequestDto("TV"),
+                makeRequestDto("oven")
+        );
+
+        List<RequestDto> requestDto = List.of(
+                requestService.addRequest(userDto.getId(), sourceRequestDto.get(0)),
+                requestService.addRequest(userDto.getId(), sourceRequestDto.get(1))
+        );
+
+        List<RequestDto> getRequestDto = requestService.getRequestsByOwner(userDto.getId());
+
+        assertThat(requestDto, hasSize(getRequestDto.size()));
+        assertThat(requestDto.get(0).getId(), equalTo(getRequestDto.get(0).getId()));
+        assertThat(requestDto.get(0).getUserId(), equalTo(getRequestDto.get(0).getUserId()));
+        assertThat(requestDto.get(0).getDescription(), equalTo(getRequestDto.get(0).getDescription()));
+        assertThat(requestDto.get(1).getId(), equalTo(getRequestDto.get(1).getId()));
+        assertThat(requestDto.get(1).getUserId(), equalTo(getRequestDto.get(1).getUserId()));
+        assertThat(requestDto.get(1).getDescription(), equalTo(getRequestDto.get(1).getDescription()));
+    }
+
+    @Test
+    void getRequestsByParam() {
+        // given & when
+        UserDto firstRequestorDto = makeUserDto("Alexey", "alexey@ya.ru");
+        firstRequestorDto = userService.addUser(firstRequestorDto);
+        UserDto secondRequestorDto = makeUserDto("Ilya", "ilya@ya.ru");
+        secondRequestorDto = userService.addUser(secondRequestorDto);
+
+        List<RequestDto> sourceRequestDto = List.of(
+                makeRequestDto("TV"),
+                makeRequestDto("oven")
+        );
+
+        List<RequestDto> requestDto = List.of(
+                requestService.addRequest(firstRequestorDto.getId(), sourceRequestDto.get(0)),
+                requestService.addRequest(firstRequestorDto.getId(), sourceRequestDto.get(1))
+        );
+
+        List<RequestDto> getRequestDto = requestService.getRequestsByParam(secondRequestorDto.getId(), 1, 1);
+
+        assertThat(getRequestDto, hasSize(1));
+        assertThat(requestDto.get(1).getId(), equalTo(getRequestDto.get(0).getId()));
+        assertThat(requestDto.get(1).getUserId(), equalTo(getRequestDto.get(0).getUserId()));
+        assertThat(requestDto.get(1).getDescription(), equalTo(getRequestDto.get(0).getDescription()));
     }
 
     private UserDto makeUserDto(String name, String email) {
