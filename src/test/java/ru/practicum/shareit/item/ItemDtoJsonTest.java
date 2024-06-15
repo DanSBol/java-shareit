@@ -25,8 +25,8 @@ public class ItemDtoJsonTest {
                 "TV",
                 "Large color TV",
                 true,
-                null,
-                null,
+                lastBooking,
+                nextBooking,
                 null,
                 null);
 
@@ -36,8 +36,14 @@ public class ItemDtoJsonTest {
         assertThat(result).extractingJsonPathStringValue("$.name").isEqualTo("TV");
         assertThat(result).extractingJsonPathStringValue("$.description").isEqualTo("Large color TV");
         assertThat(result).extractingJsonPathBooleanValue("$.available").isEqualTo(true);
-        assertThat(result).extractingJsonPathStringValue("$.lastBooking").isEqualTo(null);
-        assertThat(result).extractingJsonPathStringValue("$.nextBooking").isEqualTo(null);
+        assertThat(result).extractingJsonPathNumberValue("$.lastBooking.id")
+                .isEqualTo(lastBooking.getId().intValue());
+        assertThat(result).extractingJsonPathNumberValue("$.lastBooking.bookerId")
+                .isEqualTo(lastBooking.getBookerId().intValue());
+        assertThat(result).extractingJsonPathNumberValue("$.nextBooking.id")
+                .isEqualTo(nextBooking.getId().intValue());
+        assertThat(result).extractingJsonPathNumberValue("$.nextBooking.bookerId")
+                .isEqualTo(nextBooking.getBookerId().intValue());
         assertThat(result).extractingJsonPathStringValue("$.requestId").isEqualTo(null);
         assertThat(result).extractingJsonPathStringValue("$.comments").isEqualTo(null);
     }
