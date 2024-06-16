@@ -115,6 +115,32 @@ class UserControllerTest {
     }
 
     @Test
+    void updateUser_404_not_found() throws Exception {
+
+        UserDto updateForUserDto = new UserDto();
+        updateForUserDto.setName("Alexey");
+        updateForUserDto.setEmail("alexey.doe@mail.com");
+
+        UserDto newUserDto = new UserDto(
+                1L,
+                "Alexey",
+                "alexey.doe@mail.com");
+
+        when(userService.updateUser(eq(999L), any()))
+                .thenThrow(NotFoundException.class);
+
+        mvc.perform(patch("/users/{userId}", 999L)
+                        .content(mapper.writeValueAsString(updateForUserDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(userService, times(1)).updateUser(eq(999L), any());
+        verifyNoMoreInteractions(userService);
+    }
+
+    @Test
     void deleteUser() throws Exception {
 
         doNothing().when(userService).deleteUser(userDto.getId());
