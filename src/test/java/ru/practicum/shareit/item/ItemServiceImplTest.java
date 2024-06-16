@@ -5,9 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import ru.practicum.shareit.booking.BookingDto;
-import ru.practicum.shareit.booking.BookingService;
-import ru.practicum.shareit.booking.BookingServiceImpl;
+import ru.practicum.shareit.booking.*;
 import ru.practicum.shareit.config.PersistenceConfig;
 import ru.practicum.shareit.user.*;
 
@@ -69,6 +67,7 @@ class ItemServiceImplTest {
         itemDto = itemService.addItem(userDto.getId(), itemDto);
         ItemDto updatedItemDto = makeItemDto("Microwave oven",
                 "Non-working oven", false);
+
         itemDto = itemService.updateItem(userDto.getId(), itemDto.getId(), updatedItemDto);
 
         // then
@@ -118,16 +117,39 @@ class ItemServiceImplTest {
         // given & when
         UserDto userDto = makeUserDto("Alexey", "alexey@ya.ru");
         userDto = userService.addUser(userDto);
+        UserDto bookerDto = makeUserDto("Ilya", "ilya@ya.ru");
+        bookerDto = userService.addUser(bookerDto);
         ItemDto itemDto = makeItemDto("Microwave oven",
                 "Power compact microwave oven", true);
         itemDto = itemService.addItem(userDto.getId(), itemDto);
+
+        BookingDto lastBookingDto = makeBookingDto(bookerDto, itemDto, LocalDateTime.now().minusSeconds(2),
+                LocalDateTime.now().minusSeconds(1));
+        lastBookingDto = bookingService.addBooking(bookerDto.getId(), lastBookingDto);
+        bookingService.approveBooking(userDto.getId(), lastBookingDto.getId(), true);
+        BookingDto nextBookingDto = makeBookingDto(bookerDto, itemDto, LocalDateTime.now().plusHours(1),
+                LocalDateTime.now().plusHours(1).plusSeconds(1));
+        nextBookingDto = bookingService.addBooking(bookerDto.getId(), nextBookingDto);
+        bookingService.approveBooking(userDto.getId(), nextBookingDto.getId(), true);
+
         ItemDto getItemDto = itemService.getItem(userDto.getId(), itemDto.getId());
+
+        TypedQuery<Booking> bookingQuery = em.createQuery("Select bo from Booking bo where bo.id = :id",
+                Booking.class);
+        Booking lastBooking = bookingQuery.setParameter("id", lastBookingDto.getId())
+                .getSingleResult();
+        Booking nextBooking = bookingQuery.setParameter("id", nextBookingDto.getId())
+                .getSingleResult();
+        BookingShotDto lastBookingShotDto = BookingMapper.mapToBookingShotDto(lastBooking);
+        BookingShotDto nextBookingShotDto = BookingMapper.mapToBookingShotDto(nextBooking);
 
         assertThat(getItemDto.getId(), notNullValue());
         assertThat(itemDto.getUserId(), equalTo(getItemDto.getUserId()));
         assertThat(itemDto.getName(), equalTo(getItemDto.getName()));
         assertThat(itemDto.getDescription(), equalTo(getItemDto.getDescription()));
         assertThat(itemDto.getAvailable(), equalTo(getItemDto.getAvailable()));
+        assertThat(lastBookingShotDto, equalTo(getItemDto.getLastBooking()));
+        assertThat(nextBookingShotDto, equalTo(getItemDto.getNextBooking()));
     }
 
     @Test
@@ -242,5 +264,16 @@ class ItemServiceImplTest {
         itemDto.setDescription(description);
         itemDto.setAvailable(available);
         return itemDto;
+    }
+
+    private BookingDto makeBookingDto(UserDto booker, ItemDto itemDto, LocalDateTime startDate, LocalDateTime endDate) {
+        BookingDto bookingDto = new BookingDto();
+        bookingDto.setBooker(booker);
+        bookingDto.setItem(itemDto);
+        bookingDto.setItemId(itemDto.getId());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        bookingDto.setStart(startDate.format(formatter));
+        bookingDto.setEnd(endDate.format(formatter));
+        return bookingDto;
     }
 }
