@@ -226,9 +226,7 @@ class ItemServiceImplTest {
 
         Thread.sleep(1000);
 
-        CommentDto commentDto = new CommentDto();
-        commentDto.setText("Cool");
-        commentDto = itemService.addComment(bookerDto.getId(), itemDto.getId(), commentDto);
+        CommentDto commentDto = itemService.addComment(bookerDto.getId(), itemDto.getId(), makeCommentDto("Cool"));
 
         // then
         TypedQuery<User> userQuery = em.createQuery("Select us from User us where us.id = :id", User.class);
@@ -274,5 +272,11 @@ class ItemServiceImplTest {
         bookingDto.setStart(startDate.format(formatter));
         bookingDto.setEnd(endDate.format(formatter));
         return bookingDto;
+    }
+
+    private CommentDto makeCommentDto(String text) {
+        CommentDto commentDto = new CommentDto();
+        commentDto.setText(text);
+        return commentDto;
     }
 }
