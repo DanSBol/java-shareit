@@ -14,6 +14,7 @@ import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -246,6 +247,12 @@ class ItemServiceImplTest {
         assertThat(comment.getAuthor(), equalTo(user));
         assertThat(comment.getItem(), equalTo(item));
         assertThat(comment.getText(), equalTo(commentDto.getText()));
+
+        List<Comment> commentList = new ArrayList<>();
+        commentList.add(comment);
+        List<CommentDto> commentDtoList = CommentMapper.mapToCommentsDto(commentList);
+
+        assertThat(commentDtoList.get(0), equalTo(commentDto));
     }
 
     private UserDto makeUserDto(String name, String email) {
