@@ -12,6 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.shareit.booking.BookingShotDto;
+import ru.practicum.shareit.exception.BadRequestException;
+import ru.practicum.shareit.exception.error.ErrorHandler;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -46,6 +48,7 @@ class ItemControllerTest {
     void setUp() {
         mvc = MockMvcBuilders
             .standaloneSetup(controller)
+            .setControllerAdvice(ErrorHandler.class)
             .build();
 
         lastBooking = new BookingShotDto(1L, 1L);
@@ -253,6 +256,28 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.authorName", is(getCommentDto.getAuthorName())))
                 .andExpect(jsonPath("$.itemId", is(getCommentDto.getItemId()), Long.class))
                 .andExpect(jsonPath("$.text", is(getCommentDto.getText())));
+
+        verify(itemService, times(1)).addComment(eq(1L), eq(itemDto.getId()), any());
+        verifyNoMoreInteractions(itemService);
+    }
+
+    @Test
+    void addNewComment_400_bad_request() throws Exception {
+        CommentDto putCommentDto = new CommentDto();
+        putCommentDto.setItemId(itemDto.getId());
+        putCommentDto.setAuthorName("Alexey");
+        putCommentDto.setText("");
+
+        when(itemService.addComment(eq(1L), eq(itemDto.getId()), any()))
+                .thenThrow(BadRequestException.class);
+
+        mvc.perform(post("/items/{itemId}/comment", itemDto.getId())
+                        .headers(headers)
+                        .content(mapper.writeValueAsString(putCommentDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
 
         verify(itemService, times(1)).addComment(eq(1L), eq(itemDto.getId()), any());
         verifyNoMoreInteractions(itemService);
