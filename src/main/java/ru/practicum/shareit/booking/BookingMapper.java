@@ -22,15 +22,15 @@ public class BookingMapper {
     }
 
     public static BookingDto mapToBookingDto(Booking booking) {
-        return new BookingDto.BookingDtoBuilder()
-            .id(booking.getId())
-            .booker(UserMapper.mapToUserDto(booking.getBooker()))
-            .itemId(booking.getItem().getId())
-            .item(ItemMapper.mapToItemDto(booking.getItem(), null, null, null))
-            .start(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN).format(booking.getStartDate()))
-            .end(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN).format(booking.getEndDate()))
-            .status(booking.getStatus().toString())
-            .build();
+        BookingDto bookingDto = new BookingDto();
+        bookingDto.setId(booking.getId());
+        bookingDto.setBooker(UserMapper.mapToUserDto(booking.getBooker()));
+        bookingDto.setItemId(booking.getItem().getId());
+        bookingDto.setItem(ItemMapper.mapToItemDto(booking.getItem(), null, null, null));
+        bookingDto.setStart(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN).format(booking.getStartDate()));
+        bookingDto.setEnd(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN).format(booking.getEndDate()));
+        bookingDto.setStatus(booking.getStatus().toString());
+        return bookingDto;
     }
 
     public static BookingShotDto mapToBookingShotDto(Booking booking) {

@@ -226,9 +226,8 @@ class ItemServiceImplTest {
 
         Thread.sleep(1000);
 
-        CommentDto commentDto = CommentDto.builder()
-                .text("Cool")
-                .build();
+        CommentDto commentDto = new CommentDto();
+        commentDto.setText("Cool");
         commentDto = itemService.addComment(bookerDto.getId(), itemDto.getId(), commentDto);
 
         // then

@@ -16,13 +16,13 @@ public class CommentMapper {
     }
 
     public static CommentDto mapToCommentDto(Comment comment) {
-        return new CommentDto.CommentDtoBuilder()
-            .id(comment.getId())
-            .authorName(comment.getAuthor().getName())
-            .itemId(comment.getItem().getId())
-            .text(comment.getText())
-            .created(comment.getCreated().toString())
-            .build();
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(comment.getId());
+        commentDto.setAuthorName(comment.getAuthor().getName());
+        commentDto.setItemId(comment.getItem().getId());
+        commentDto.setText(comment.getText());
+        commentDto.setCreated(comment.getCreated().toString());
+        return commentDto;
     }
 
     public static List<CommentDto> mapToCommentsDto(List<Comment> comments) {
