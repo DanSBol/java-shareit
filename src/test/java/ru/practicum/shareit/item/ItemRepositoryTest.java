@@ -50,6 +50,7 @@ class ItemRepositoryTest {
         testItem.setName("testItemName");
         testItem.setDescription("testItemDescription");
         testItem.setAvailable(true);
+        testItem = itemRepository.save(testItem);
     }
 
     @AfterEach
