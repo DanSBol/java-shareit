@@ -148,8 +148,7 @@ public class ItemServiceImpl implements ItemService {
         if (commentDto.getText().isEmpty()) {
             throw new BadRequestException("Empty comment.");
         }
-        Comment comment = CommentMapper.mapToComment(commentDto, user, item);
-        comment = commentRepository.saveAndFlush(comment);
-        return CommentMapper.mapToCommentDto(comment);
+        return CommentMapper.mapToCommentDto(commentRepository.saveAndFlush(CommentMapper.mapToComment(commentDto, user,
+                item)));
     }
 }
