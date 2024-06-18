@@ -9,6 +9,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -94,5 +97,29 @@ class ItemRepositoryTest {
         assertEquals("updatedItemName", updatedItem.getName());
         assertEquals("updatedItemDescription", updatedItem.getDescription());
         assertEquals(newUser, updatedItem.getOwner());
+    }
+
+    @Test
+    void getItemsByOwner() {
+        User secondTestUser = new User();
+        secondTestUser.setName("testuser");
+        secondTestUser.setEmail("testuser@ya.ru");
+        secondTestUser = userRepository.save(secondTestUser);
+        Item secondTestItem = new Item();
+        secondTestItem.setOwner(secondTestUser);
+        secondTestItem.setName("testItemName");
+        secondTestItem.setDescription("testItemDescription");
+        secondTestItem.setAvailable(true);
+        secondTestItem = itemRepository.save(secondTestItem);
+
+        Pageable pageable = PageRequest.of(0, 1);
+
+        Page<Item> items = itemRepository.getItemsByOwner(testUser.getId(), pageable);
+        assertEquals(1, items.getSize());
+        assertEquals(testItem.getId(), items.getContent().get(0).getId());
+        assertEquals(testItem.getOwner(), items.getContent().get(0).getOwner());
+        assertEquals(testItem.getName(), items.getContent().get(0).getName());
+        assertEquals(testItem.getDescription(), items.getContent().get(0).getDescription());
+        assertEquals(testItem.getAvailable(), items.getContent().get(0).getAvailable());
     }
 }

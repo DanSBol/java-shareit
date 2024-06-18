@@ -1,12 +1,16 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.practicum.shareit.booking.*;
 import ru.practicum.shareit.config.PersistenceConfig;
+import ru.practicum.shareit.request.RequestDto;
+import ru.practicum.shareit.request.RequestService;
+import ru.practicum.shareit.request.RequestServiceImpl;
 import ru.practicum.shareit.user.*;
 
 import javax.persistence.EntityManager;
@@ -21,15 +25,18 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static ru.practicum.shareit.item.CommentMapper.mapToCommentsDto;
 
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @TestPropertySource(properties = { "db.name=test"})
-@SpringJUnitConfig({PersistenceConfig.class, UserServiceImpl.class, ItemServiceImpl.class, BookingServiceImpl.class})
+@SpringJUnitConfig({PersistenceConfig.class, UserServiceImpl.class, RequestServiceImpl.class,
+        ItemServiceImpl.class, BookingServiceImpl.class})
 class ItemServiceImplTest {
 
     private final EntityManager em;
     private final UserService userService;
+    private final RequestService requestService;
     private final ItemService itemService;
     private final BookingService bookingService;
 
@@ -38,8 +45,10 @@ class ItemServiceImplTest {
         // given & when
         UserDto userDto = makeUserDto("Alexey", "alexey@ya.ru");
         userDto = userService.addUser(userDto);
+        RequestDto requestDto = makeRequestDto("oven");
+        requestDto = requestService.addRequest(userDto.getId(), requestDto);
         ItemDto itemDto = makeItemDto("Microwave oven",
-                "Power compact microwave oven", true);
+                "Power compact microwave oven", true, requestDto.getId());
         itemDto = itemService.addItem(userDto.getId(), itemDto);
 
         // then
@@ -64,11 +73,13 @@ class ItemServiceImplTest {
         // given & when
         UserDto userDto = makeUserDto("Alexey", "alexey@ya.ru");
         userDto = userService.addUser(userDto);
+        RequestDto requestDto = makeRequestDto("oven");
+        requestDto = requestService.addRequest(userDto.getId(), requestDto);
         ItemDto itemDto = makeItemDto("Microwave oven",
-                "Power compact microwave oven", true);
+                "Power compact microwave oven", true, requestDto.getId());
         itemDto = itemService.addItem(userDto.getId(), itemDto);
         ItemDto updatedItemDto = makeItemDto("Microwave oven",
-                "Non-working oven", false);
+                "Non-working oven", false, requestDto.getId());
 
         itemDto = itemService.updateItem(userDto.getId(), itemDto.getId(), updatedItemDto);
 
@@ -87,7 +98,7 @@ class ItemServiceImplTest {
         assertThat(item.getName(), equalTo(updatedItemDto.getName()));
         assertThat(item.getDescription(), equalTo(updatedItemDto.getDescription()));
         assertThat(item.getAvailable(), equalTo(updatedItemDto.getAvailable()));
-        assertThat(item.getRequest(), equalTo(null));
+        assertThat(item.getRequest().getId(), equalTo(updatedItemDto.getRequestId()));
 
         assertThat(itemDto.getComments(), equalTo(new HashSet<>()));
     }
@@ -97,11 +108,13 @@ class ItemServiceImplTest {
         // given & when
         UserDto userDto = makeUserDto("Alexey", "alexey@ya.ru");
         userDto = userService.addUser(userDto);
+        RequestDto requestDto = makeRequestDto("oven");
+        requestDto = requestService.addRequest(userDto.getId(), requestDto);
         ItemDto itemDto = makeItemDto("Microwave oven",
-                "Power compact microwave oven", true);
+                "Power compact microwave oven", true, requestDto.getId());
         itemDto = itemService.addItem(userDto.getId(), itemDto);
         ItemDto updatedItemDto = makeItemDto("Microwave oven",
-                "Non-working oven", false);
+                "Non-working oven", false, null);
         itemService.deleteItem(userDto.getId(), itemDto.getId());
 
         // then
@@ -124,8 +137,10 @@ class ItemServiceImplTest {
         userDto = userService.addUser(userDto);
         UserDto bookerDto = makeUserDto("Ilya", "ilya@ya.ru");
         bookerDto = userService.addUser(bookerDto);
+        RequestDto requestDto = makeRequestDto("oven");
+        requestDto = requestService.addRequest(bookerDto.getId(), requestDto);
         ItemDto itemDto = makeItemDto("Microwave oven",
-                "Power compact microwave oven", true);
+                "Power compact microwave oven", true, requestDto.getId());
         itemDto = itemService.addItem(userDto.getId(), itemDto);
 
         BookingDto lastBookingDto = makeBookingDto(bookerDto, itemDto, LocalDateTime.now().minusSeconds(2),
@@ -155,6 +170,7 @@ class ItemServiceImplTest {
         assertThat(itemDto.getAvailable(), equalTo(getItemDto.getAvailable()));
         assertThat(lastBookingShotDto, equalTo(getItemDto.getLastBooking()));
         assertThat(nextBookingShotDto, equalTo(getItemDto.getNextBooking()));
+        assertThat(requestDto.getId(), equalTo(getItemDto.getRequestId()));
     }
 
     @Test
@@ -164,8 +180,8 @@ class ItemServiceImplTest {
         userDto = userService.addUser(userDto);
 
         List<ItemDto> sourceItems = List.of(
-                makeItemDto("Microwave oven", "Power compact microwave oven", true),
-                makeItemDto("TV", "Large color TV", false)
+                makeItemDto("Microwave oven", "Power compact microwave oven", true, null),
+                makeItemDto("TV", "Large color TV", false, null)
         );
 
         itemService.addItem(userDto.getId(), sourceItems.get(0));
@@ -188,8 +204,8 @@ class ItemServiceImplTest {
         userDto = userService.addUser(userDto);
 
         List<ItemDto> sourceItems = List.of(
-                makeItemDto("Microwave oven", "Power compact microwave oven", true),
-                makeItemDto("TV", "Large color TV", true)
+                makeItemDto("Microwave oven", "Power compact microwave oven", true, null),
+                makeItemDto("TV", "Large color TV", true, null)
         );
 
         itemService.addItem(userDto.getId(), sourceItems.get(0));
@@ -211,7 +227,8 @@ class ItemServiceImplTest {
         UserDto userDto = userService.addUser(makeUserDto("Alexey", "alexey@ya.ru"));
         UserDto bookerDto = userService.addUser(makeUserDto("Ilya", "ilya@ya.ru"));
         ItemDto itemDto = itemService.addItem(userDto.getId(),
-                makeItemDto("Microwave oven", "Power compact microwave oven", true));
+                makeItemDto("Microwave oven", "Power compact microwave oven", true,
+                        null));
         BookingDto bookingDto = new BookingDto();
         bookingDto.setBooker(bookerDto);
         bookingDto.setItemId(itemDto.getId());
@@ -227,7 +244,7 @@ class ItemServiceImplTest {
         bookingDto.setEnd(end);
 
         bookingDto.setStatus("APPROVED");
-        bookingDto = bookingService.addBooking(bookerDto.getId(), bookingDto);
+        bookingService.addBooking(bookerDto.getId(), bookingDto);
 
         Thread.sleep(1000);
 
@@ -254,9 +271,9 @@ class ItemServiceImplTest {
 
         List<Comment> commentList = new ArrayList<>();
         commentList.add(comment);
-        List<CommentDto> commentDtoList = CommentMapper.mapToCommentsDto(commentList);
+        List<CommentDto> commentDtoList = mapToCommentsDto(commentList);
 
-        assertThat(commentDtoList.get(0), equalTo(commentDto));
+        assertThat(commentDto, equalTo(commentDtoList.get(0)));
     }
 
     private UserDto makeUserDto(String name, String email) {
@@ -266,11 +283,18 @@ class ItemServiceImplTest {
         return dto;
     }
 
-    private ItemDto makeItemDto(String name, String description, Boolean available) {
+    private RequestDto makeRequestDto(String text) {
+        RequestDto dto = new RequestDto();
+        dto.setDescription(text);
+        return dto;
+    }
+
+    private ItemDto makeItemDto(String name, String description, Boolean available, Long requestId) {
         ItemDto itemDto = new ItemDto();
         itemDto.setName(name);
         itemDto.setDescription(description);
         itemDto.setAvailable(available);
+        itemDto.setRequestId(requestId);
         return itemDto;
     }
 
