@@ -15,6 +15,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -86,6 +87,9 @@ class ItemServiceImplTest {
         assertThat(item.getName(), equalTo(updatedItemDto.getName()));
         assertThat(item.getDescription(), equalTo(updatedItemDto.getDescription()));
         assertThat(item.getAvailable(), equalTo(updatedItemDto.getAvailable()));
+        assertThat(item.getRequest(), equalTo(null));
+
+        assertThat(itemDto.getComments(), equalTo(new HashSet<>()));
     }
 
     @Test
