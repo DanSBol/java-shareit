@@ -71,7 +71,7 @@ class UserControllerTest {
 
     @Test
     void addUser_400_bad_request() throws Exception {
-        when(userService.addUser(any())).thenThrow(BadRequestException.class);
+        when(userService.addUser(any())).thenThrow(new BadRequestException("User Email invalid."));
         userDto.setEmail("");
 
         mvc.perform(post("/users")
@@ -127,7 +127,7 @@ class UserControllerTest {
                 "alexey.doe@mail.com");
 
         when(userService.updateUser(eq(999L), any()))
-                .thenThrow(NotFoundException.class);
+                .thenThrow(new NotFoundException("User not found."));
 
         mvc.perform(patch("/users/{userId}", 999L)
                         .content(mapper.writeValueAsString(updateForUserDto))
@@ -170,7 +170,7 @@ class UserControllerTest {
     @Test
     void getUser_404_not_found() throws Exception {
 
-        when(userService.getUser(1)).thenThrow(NotFoundException.class);
+        when(userService.getUser(1)).thenThrow(new NotFoundException("User not found."));
 
         mvc.perform(get("/users/{userId}", 1))
                 .andExpect(status().isNotFound());
