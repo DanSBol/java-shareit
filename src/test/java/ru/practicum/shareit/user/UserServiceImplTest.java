@@ -78,9 +78,7 @@ class UserServiceImplTest {
     @Test
     void updateUser_404_not_found_one_more() {
         UserDto userDto = makeUserDto("Пётр", "some@email.com");
-        NotFoundException thrown = Assertions.assertThrows(NotFoundException.class, () -> {
-            service.updateUser(1L, userDto);
-        }, "User not found.");
+        NotFoundException thrown = Assertions.assertThrows(NotFoundException.class, () -> service.updateUser(1L, userDto), "User not found.");
 
         Assertions.assertEquals("User not found.", thrown.getMessage());
     }
@@ -123,9 +121,7 @@ class UserServiceImplTest {
 
     @Test
     void getUser_404_not_found() {
-        NotFoundException thrown = Assertions.assertThrows(NotFoundException.class, () -> {
-            service.getUser(1L);
-        });
+        NotFoundException thrown = Assertions.assertThrows(NotFoundException.class, () -> service.getUser(1L));
 
         Assertions.assertEquals("User not found.", thrown.getMessage());
     }

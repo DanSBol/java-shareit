@@ -118,9 +118,7 @@ class ItemServiceImplTest {
     void updateItem_404_not_found() {
         ItemDto itemDto = makeItemDto("Microwave oven",
                 "Power compact microwave oven", true, null);
-        NotFoundException thrown = Assertions.assertThrows(NotFoundException.class, () -> {
-            itemService.updateItem(1L, 1L, itemDto);
-        });
+        NotFoundException thrown = Assertions.assertThrows(NotFoundException.class, () -> itemService.updateItem(1L, 1L, itemDto));
 
         Assertions.assertEquals("Item not found.", thrown.getMessage());
     }
