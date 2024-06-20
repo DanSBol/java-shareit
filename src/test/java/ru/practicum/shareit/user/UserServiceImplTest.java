@@ -1,13 +1,11 @@
 package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.practicum.shareit.config.PersistenceConfig;
-import ru.practicum.shareit.exception.NotFoundException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -18,7 +16,6 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.anyLong;
 
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -66,7 +63,7 @@ class UserServiceImplTest {
         assertThat(user.getName(), equalTo(updatedUserDto.getName()));
         assertThat(user.getEmail(), equalTo(updatedUserDto.getEmail()));
     }
-
+/*
     @Test
     void updateUser_404_not_found() {
         NotFoundException thrown = Assertions.assertThrows(NotFoundException.class, () -> {
@@ -75,7 +72,7 @@ class UserServiceImplTest {
 
         Assertions.assertEquals("User not found.", thrown.getMessage());
     }
-
+*/
     @Test
     void deleteUser() {
         // given

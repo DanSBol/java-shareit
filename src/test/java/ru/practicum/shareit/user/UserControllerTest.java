@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -71,7 +72,7 @@ class UserControllerTest {
 
     @Test
     void addUser_400_bad_request() throws Exception {
-        when(userService.addUser(any())).thenThrow(new BadRequestException("User Email invalid."));
+        when(userService.addUser(Mockito.any(UserDto.class))).thenThrow(BadRequestException.class);
         userDto.setEmail("");
 
         mvc.perform(post("/users")
@@ -81,7 +82,7 @@ class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
-        verify(userService, times(1)).addUser(any());
+        verify(userService, times(1)).addUser(Mockito.any(UserDto.class));
         verifyNoMoreInteractions(userService);
     }
 
