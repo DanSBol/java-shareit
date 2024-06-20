@@ -1,11 +1,13 @@
 package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.practicum.shareit.config.PersistenceConfig;
+import ru.practicum.shareit.exception.NotFoundException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -16,6 +18,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.anyLong;
 
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -65,6 +68,15 @@ class UserServiceImplTest {
     }
 
     @Test
+    void updateUser_404_not_found() {
+        NotFoundException thrown = Assertions.assertThrows(NotFoundException.class, () -> {
+            service.updateUser(anyLong(), makeUserDto("Petr", "petr.first@ya.ru"));
+        }, "User not found.");
+
+        Assertions.assertEquals("User not found.", thrown.getMessage());
+    }
+
+    @Test
     void deleteUser() {
         // given
         UserDto userDto = makeUserDto("Пётр", "petr@ya.ru");
@@ -99,7 +111,16 @@ class UserServiceImplTest {
         assertThat(user.getName(), equalTo(getUserDto.getName()));
         assertThat(user.getEmail(), equalTo(getUserDto.getEmail()));
     }
+/*
+    @Test
+    void getUser_404_not_found() {
+        NotFoundException thrown = Assertions.assertThrows(NotFoundException.class, () -> {
+            service.getUser(anyLong());
+        });
 
+        Assertions.assertEquals("User not found.", thrown.getMessage());
+    }
+*/
     @Test
     void getAllUsers() {
         // given

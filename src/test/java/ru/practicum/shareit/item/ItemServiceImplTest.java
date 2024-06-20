@@ -101,7 +101,19 @@ class ItemServiceImplTest {
 
         assertThat(itemDto.getComments(), equalTo(new HashSet<>()));
     }
+/*
+    @Test
+    void updateItem_404_not_found() {
+        ItemDto itemDto = makeItemDto("Microwave oven",
+                "Power compact microwave oven", true, null);
 
+        NotFoundException thrown = Assertions.assertThrows(NotFoundException.class, () -> {
+            itemService.updateItem(anyLong(), anyLong(), itemDto);
+        });
+
+        Assertions.assertEquals("Item not found.", thrown.getMessage());
+    }
+*/
     @Test
     void deleteItem() {
         // given & when

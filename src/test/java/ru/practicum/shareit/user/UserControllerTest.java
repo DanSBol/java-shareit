@@ -170,12 +170,12 @@ class UserControllerTest {
     @Test
     void getUser_404_not_found() throws Exception {
 
-        when(userService.getUser(1)).thenThrow(new NotFoundException("User not found."));
+        when(userService.getUser(anyLong())).thenThrow(new NotFoundException("User not found."));
 
-        mvc.perform(get("/users/{userId}", 1))
+        mvc.perform(get("/users/{userId}", anyLong()))
                 .andExpect(status().isNotFound());
 
-        verify(userService, times(1)).getUser(1);
+        verify(userService, times(1)).getUser(anyLong());
         verifyNoMoreInteractions(userService);
     }
 

@@ -41,9 +41,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto updateItem(long userId, long itemId, ItemDto itemDto) {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Item not found."));
-        if (!itemRepository.existsById(itemId)) {
-            throw new NotFoundException("Item not found.");
-        }
         if (userId != item.getOwner().getId()) {
             throw new NotFoundException("This item has another owner.");
         }
