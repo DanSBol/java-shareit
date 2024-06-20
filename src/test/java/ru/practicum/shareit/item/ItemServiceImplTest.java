@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -67,6 +68,15 @@ class ItemServiceImplTest {
         assertThat(item.getName(), equalTo(itemDto.getName()));
         assertThat(item.getDescription(), equalTo(itemDto.getDescription()));
         assertThat(item.getAvailable(), equalTo(itemDto.getAvailable()));
+    }
+
+    @Test
+    void addItem_404_user_not_found() {
+        ItemDto itemDto = makeItemDto("Microwave oven",
+                "Power compact microwave oven", true, null);
+        assertThatThrownBy(() -> itemService.addItem(1L, itemDto))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining("User not found.");
     }
 
     @Test
@@ -143,6 +153,13 @@ class ItemServiceImplTest {
     }
 
     @Test
+    void deleteItem_404_item_not_found() {
+        assertThatThrownBy(() -> itemService.deleteItem(1L, 1L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining("Item not found.");
+    }
+
+    @Test
     void getItem() {
         // given & when
         UserDto userDto = makeUserDto("Alexey", "alexey@ya.ru");
@@ -183,6 +200,13 @@ class ItemServiceImplTest {
         assertThat(lastBookingShotDto, equalTo(getItemDto.getLastBooking()));
         assertThat(nextBookingShotDto, equalTo(getItemDto.getNextBooking()));
         assertThat(requestDto.getId(), equalTo(getItemDto.getRequestId()));
+    }
+
+    @Test
+    void getItem_404_item_not_found() {
+        assertThatThrownBy(() -> itemService.deleteItem(1L, 1L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining("Item not found.");
     }
 
     @Test
@@ -286,6 +310,14 @@ class ItemServiceImplTest {
         List<CommentDto> commentDtoList = mapToCommentsDto(commentList);
 
         assertThat(commentDto, equalTo(commentDtoList.get(0)));
+    }
+
+    @Test
+    void addComment_404_user_not_found() {
+        CommentDto commentDto = makeCommentDto("Cool");
+        assertThatThrownBy(() -> itemService.addComment(1L, 1L, commentDto))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining("User not found.");
     }
 
     private UserDto makeUserDto(String name, String email) {

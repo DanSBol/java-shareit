@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.practicum.shareit.config.PersistenceConfig;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserDto;
 import ru.practicum.shareit.user.UserService;
@@ -17,6 +18,7 @@ import javax.transaction.Transactional;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -55,6 +57,14 @@ class RequestServiceImplTest {
     }
 
     @Test
+    void addRequest_404_user_not_found() {
+        RequestDto requestDto = makeRequestDto("TV");
+        assertThatThrownBy(() -> requestService.addRequest(1L, requestDto))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining("User not found.");
+    }
+
+    @Test
     void getRequest() {
         // given & when
         UserDto userDto = makeUserDto("Alexey", "alexey@ya.ru");
@@ -69,6 +79,13 @@ class RequestServiceImplTest {
     }
 
     @Test
+    void getRequest_404_user_not_found() {
+        assertThatThrownBy(() -> requestService.getRequest(1L, 1L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining("User not found.");
+    }
+
+    @Test
     void getRequestsByOwner() {
         // given & when
         UserDto userDto = makeUserDto("Alexey", "alexey@ya.ru");
@@ -78,7 +95,6 @@ class RequestServiceImplTest {
                 makeRequestDto("TV"),
                 makeRequestDto("oven")
         );
-
         List<RequestDto> requestDto = List.of(
                 requestService.addRequest(userDto.getId(), sourceRequestDto.get(0)),
                 requestService.addRequest(userDto.getId(), sourceRequestDto.get(1))
@@ -93,6 +109,13 @@ class RequestServiceImplTest {
         assertThat(requestDto.get(1).getId(), equalTo(getRequestDto.get(1).getId()));
         assertThat(requestDto.get(1).getUserId(), equalTo(getRequestDto.get(1).getUserId()));
         assertThat(requestDto.get(1).getDescription(), equalTo(getRequestDto.get(1).getDescription()));
+    }
+
+    @Test
+    void getRequestsByOwner_404_user_not_found() {
+        assertThatThrownBy(() -> requestService.getRequestsByOwner(1L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining("User not found.");
     }
 
     @Test
@@ -119,6 +142,13 @@ class RequestServiceImplTest {
         assertThat(requestDto.get(1).getId(), equalTo(getRequestDto.get(0).getId()));
         assertThat(requestDto.get(1).getUserId(), equalTo(getRequestDto.get(0).getUserId()));
         assertThat(requestDto.get(1).getDescription(), equalTo(getRequestDto.get(0).getDescription()));
+    }
+
+    @Test
+    void getRequestsByParam_404_user_not_found() {
+        assertThatThrownBy(() -> requestService.getRequestsByParam(1L, 0, 1))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining("User not found.");
     }
 
     private UserDto makeUserDto(String name, String email) {
