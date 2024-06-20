@@ -73,7 +73,7 @@ class UserControllerTest {
     @Test
     void addUser_400_bad_request() throws Exception {
         when(userService.addUser(Mockito.any(UserDto.class))).thenThrow(BadRequestException.class);
-        userDto.setEmail("");
+        //userDto.setEmail("");
 
         mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto))

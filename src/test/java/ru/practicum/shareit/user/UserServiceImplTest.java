@@ -1,17 +1,20 @@
 package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.practicum.shareit.config.PersistenceConfig;
+import ru.practicum.shareit.exception.NotFoundException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -63,16 +66,25 @@ class UserServiceImplTest {
         assertThat(user.getName(), equalTo(updatedUserDto.getName()));
         assertThat(user.getEmail(), equalTo(updatedUserDto.getEmail()));
     }
-/*
+
     @Test
     void updateUser_404_not_found() {
+        UserDto userDto = makeUserDto("Пётр", "some@email.com");
+        assertThatThrownBy(() -> service.updateUser(1L, userDto))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining("User not found.");
+    }
+
+    @Test
+    void updateUser_404_not_found_one_more() {
+        UserDto userDto = makeUserDto("Пётр", "some@email.com");
         NotFoundException thrown = Assertions.assertThrows(NotFoundException.class, () -> {
-            service.updateUser(anyLong(), makeUserDto("Petr", "petr.first@ya.ru"));
+            service.updateUser(1L, userDto);
         }, "User not found.");
 
         Assertions.assertEquals("User not found.", thrown.getMessage());
     }
-*/
+
     @Test
     void deleteUser() {
         // given
@@ -108,16 +120,16 @@ class UserServiceImplTest {
         assertThat(user.getName(), equalTo(getUserDto.getName()));
         assertThat(user.getEmail(), equalTo(getUserDto.getEmail()));
     }
-/*
+
     @Test
     void getUser_404_not_found() {
         NotFoundException thrown = Assertions.assertThrows(NotFoundException.class, () -> {
-            service.getUser(anyLong());
+            service.getUser(1L);
         });
 
         Assertions.assertEquals("User not found.", thrown.getMessage());
     }
-*/
+
     @Test
     void getAllUsers() {
         // given

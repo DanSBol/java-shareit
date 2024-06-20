@@ -1,12 +1,14 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.practicum.shareit.booking.*;
 import ru.practicum.shareit.config.PersistenceConfig;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.request.RequestDto;
 import ru.practicum.shareit.request.RequestService;
 import ru.practicum.shareit.request.RequestServiceImpl;
@@ -28,7 +30,7 @@ import static ru.practicum.shareit.item.CommentMapper.mapToCommentsDto;
 
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@TestPropertySource(properties = { "db.name=test"})
+@TestPropertySource(properties = {"db.name=test"})
 @SpringJUnitConfig({PersistenceConfig.class, UserServiceImpl.class, RequestServiceImpl.class,
         ItemServiceImpl.class, BookingServiceImpl.class})
 class ItemServiceImplTest {
@@ -101,19 +103,18 @@ class ItemServiceImplTest {
 
         assertThat(itemDto.getComments(), equalTo(new HashSet<>()));
     }
-/*
+
     @Test
     void updateItem_404_not_found() {
         ItemDto itemDto = makeItemDto("Microwave oven",
                 "Power compact microwave oven", true, null);
-
         NotFoundException thrown = Assertions.assertThrows(NotFoundException.class, () -> {
-            itemService.updateItem(anyLong(), anyLong(), itemDto);
+            itemService.updateItem(1L, 1L, itemDto);
         });
 
         Assertions.assertEquals("Item not found.", thrown.getMessage());
     }
-*/
+
     @Test
     void deleteItem() {
         // given & when
