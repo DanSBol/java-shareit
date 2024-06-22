@@ -35,7 +35,7 @@ public class BookingController {
     public List<BookingDto> getBookingByBooker(@RequestHeader("X-Sharer-User-Id") Long userId,
                                               @RequestParam(required = false, defaultValue = "ALL") String state,
                                               @RequestParam(required = false, defaultValue = "0") Integer from,
-                                              @RequestParam(required = false, defaultValue = "1000") Integer size) {
+                                              @RequestParam(required = false, defaultValue = "20") Integer size) {
         return bookingService.getBookingByBooker(userId, state, from, size);
     }
 
@@ -43,7 +43,7 @@ public class BookingController {
     public List<BookingDto> getBookingByOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
                                               @RequestParam(required = false, defaultValue = "ALL") String state,
                                               @RequestParam(required = false, defaultValue = "0") Integer from,
-                                              @RequestParam(required = false, defaultValue = "1000") Integer size) {
+                                              @RequestParam(required = false, defaultValue = "20") Integer size) {
         return bookingService.getBookingByOwner(userId, state, from, size);
     }
 }

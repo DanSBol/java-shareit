@@ -92,15 +92,7 @@ public class BookingServiceImpl implements BookingService {
         }
         BookingStates state = BookingStates.valueOf(stringState);
         Page<Booking> bookings = null;
-        if (from < 0 & size < 0) {
-            throw new BadRequestException(String.format("Negative from(%d) and size(%d)", from, size));
-        }
-        if (from < 0) {
-            throw new BadRequestException(String.format("Negative from: %d", from));
-        }
-        if (size < 0) {
-            throw new BadRequestException(String.format("Negative size: %d", size));
-        }
+        checkFromSize(from, size);
         PageRequest pageable = PageRequest.of(from > 0 ? from / size : 0, size);
         switch (state) {
             case ALL:
@@ -139,15 +131,7 @@ public class BookingServiceImpl implements BookingService {
         }
         BookingStates state = BookingStates.valueOf(stringState);
         Page<Booking> bookings = null;
-        if (from < 0 & size < 0) {
-            throw new BadRequestException(String.format("Negative from(%d) and size(%d)", from, size));
-        }
-        if (from < 0) {
-            throw new BadRequestException(String.format("Negative from: %d", from));
-        }
-        if (size < 0) {
-            throw new BadRequestException(String.format("Negative size: %d", size));
-        }
+        checkFromSize(from, size);
         PageRequest pageable = PageRequest.of(from > 0 ? from / size : 0, size);
         switch (state) {
             case ALL:
@@ -175,5 +159,17 @@ public class BookingServiceImpl implements BookingService {
         return bookings.getContent().stream()
             .map(BookingMapper::mapToBookingDto)
             .collect(Collectors.toList());
+    }
+
+    private void checkFromSize(int from, int size) {
+        if (from < 0 & size < 0) {
+            throw new BadRequestException(String.format("Negative from(%d) and size(%d)", from, size));
+        }
+        if (from < 0) {
+            throw new BadRequestException(String.format("Negative from: %d", from));
+        }
+        if (size < 0) {
+            throw new BadRequestException(String.format("Negative size: %d", size));
+        }
     }
 }

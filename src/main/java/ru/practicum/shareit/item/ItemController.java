@@ -40,7 +40,7 @@ public class ItemController {
     @GetMapping
     public List<ItemDto> getItem(@RequestHeader("X-Sharer-User-Id") Long userId,
                                  @RequestParam(required = false, defaultValue = "0") Integer from,
-                                 @RequestParam(required = false, defaultValue = "1000") Integer size) {
+                                 @RequestParam(required = false, defaultValue = "20") Integer size) {
         return itemService.getItemsByOwner(userId, from, size);
     }
 
@@ -48,7 +48,7 @@ public class ItemController {
     public List<ItemDto> search(@RequestHeader("X-Sharer-User-Id") Long userId,
                                 @RequestParam String text,
                                 @RequestParam(required = false, defaultValue = "0") Integer from,
-                                @RequestParam(required = false, defaultValue = "1000") Integer size) {
+                                @RequestParam(required = false, defaultValue = "20") Integer size) {
         return itemService.search(text, from, size);
     }
 
