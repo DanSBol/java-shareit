@@ -26,6 +26,8 @@ public class Booking {
     @ToString.Exclude
     private Item item;
 
+    @Setter
+    @Getter
     @Column(name = "start_date")
     private LocalDateTime startDate;
 

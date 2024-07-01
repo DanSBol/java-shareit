@@ -6,7 +6,7 @@ import java.util.List;
 public interface ItemService {
 
     @Transactional
-    ItemDto addNewItem(long userId, ItemDto itemDto);
+    ItemDto addItem(long userId, ItemDto itemDto);
 
     @Transactional
     ItemDto updateItem(long userId, long itemId, ItemDto itemDto);
@@ -16,10 +16,10 @@ public interface ItemService {
 
     ItemDto getItem(long userId, long itemId);
 
-    List<ItemDto> getItemsByOwner(long userId);
+    List<ItemDto> getItemsByOwner(long userId, int from, int size);
 
-    List<ItemDto> search(String text);
+    List<ItemDto> search(String text, int from, int size);
 
     @Transactional
-    CommentDto addNewComment(long userId, long itemId, CommentDto commentDto);
+    CommentDto addComment(long userId, long itemId, CommentDto commentDto);
 }

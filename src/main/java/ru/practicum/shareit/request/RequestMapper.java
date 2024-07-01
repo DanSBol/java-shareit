@@ -1,30 +1,24 @@
 package ru.practicum.shareit.request;
 
+import ru.practicum.shareit.item.ItemDto;
 import ru.practicum.shareit.user.User;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class RequestMapper {
-    public static RequestDto mapToRequestDto(Request request) {
+    public static RequestDto mapToRequestDto(Request request, List<ItemDto> itemsDto) {
         return new RequestDto.RequestDtoBuilder()
             .id(request.getId())
             .userId(request.getRequestor().getId())
             .description(request.getDescription())
-            .created(request.getCreated())
+            .created(request.getCreated().toString())
+            .items(itemsDto)
             .build();
     }
 
-    public static Request mapToRequest(RequestDto requestDto, User requester) {
-        return new Request.RequestBuilder()
-            .requestor(requester)
-            .description(requestDto.getDescription())
-            .created(requestDto.getCreated())
-            .build();
-    }
-
-    public static List<RequestDto> mapToRequestDto(List<Request> requests) {
-        return requests.stream()
-            .map(RequestMapper::mapToRequestDto)
-            .collect(Collectors.toList());
+    public static Request mapToRequest(RequestDto requestDto, User requestor) {
+        Request request = new Request();
+        request.setRequestor(requestor);
+        request.setDescription(requestDto.getDescription());
+        return request;
     }
 }

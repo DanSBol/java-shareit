@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.BadRequestException;
@@ -81,61 +83,93 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getBooking(long userId, String stringState) {
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("User not found.");
-        }
-        List<Booking> bookings = getBookingsByState(stringState);
-        return bookings.stream()
-            .filter(x -> x.getBooker().getId() == userId)
-            .sorted((o1, o2) -> o2.getStartDate().compareTo(o1.getStartDate()))
-            .map(BookingMapper::mapToBookingDto)
-            .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<BookingDto> getBookingByOwner(long userId, String stringState) {
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("User not found.");
-        }
-        List<Booking> bookings = getBookingsByState(stringState);
-        return bookings.stream()
-            .filter(x -> x.getItem().getOwner().getId() == userId)
-            .sorted((o1, o2) -> o2.getStartDate().compareTo(o1.getStartDate()))
-            .map(BookingMapper::mapToBookingDto)
-            .collect(Collectors.toList());
-    }
-
-    private List<Booking> getBookingsByState(String stringState) {
+    public List<BookingDto> getBookingByOwner(long userId, String stringState, int from, int size) {
+        User owner = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found."));
         boolean isState = Arrays.stream(BookingStates.values()).anyMatch(element ->
                 element.toString().equals(stringState));
         if (!isState) {
             throw new BadRequestException(String.format("Unknown state: %s", stringState));
         }
         BookingStates state = BookingStates.valueOf(stringState);
-        List<Booking> bookings = new ArrayList<>();
+        Page<Booking> bookings = null;
+        checkFromSize(from, size);
+        PageRequest pageable = PageRequest.of(from > 0 ? from / size : 0, size);
         switch (state) {
             case ALL:
-                bookings =  bookingRepository.findAll();
+                bookings =  bookingRepository.getBookingByOwner(owner, pageable);
                 break;
             case CURRENT:
-                bookings =  bookingRepository.getBookingCurrent();
+                bookings =  bookingRepository.getBookingCurrentByOwner(owner, pageable);
                 break;
             case FUTURE:
-                bookings =  bookingRepository.getBookingFuture();
+                bookings =  bookingRepository.getBookingFutureByOwner(owner, pageable);
                 break;
             case PAST:
-                bookings =  bookingRepository.getBookingPast();
+                bookings =  bookingRepository.getBookingPastByOwner(owner, pageable);
                 break;
             case WAITING:
-                bookings =  bookingRepository.getBookingByStatus(BookingStatus.WAITING);
+                bookings =  bookingRepository.getBookingByStatusAndOwner(owner, BookingStatus.WAITING, pageable);
                 break;
             case REJECTED:
-                bookings =  bookingRepository.getBookingByStatus(BookingStatus.REJECTED);
+                bookings =  bookingRepository.getBookingByStatusAndOwner(owner, BookingStatus.REJECTED, pageable);
                 break;
             default:
                 break;
         }
-        return bookings;
+        return bookings.getContent().stream()
+            .map(BookingMapper::mapToBookingDto)
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BookingDto> getBookingByBooker(long userId, String stringState, int from, int size) {
+        User booker = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found."));
+        boolean isState = Arrays.stream(BookingStates.values()).anyMatch(element ->
+                element.toString().equals(stringState));
+        if (!isState) {
+            throw new BadRequestException(String.format("Unknown state: %s", stringState));
+        }
+        BookingStates state = BookingStates.valueOf(stringState);
+        Page<Booking> bookings = null;
+        checkFromSize(from, size);
+        PageRequest pageable = PageRequest.of(from > 0 ? from / size : 0, size);
+        switch (state) {
+            case ALL:
+                bookings =  bookingRepository.getBookingByBooker(booker, pageable);
+                break;
+            case CURRENT:
+                bookings =  bookingRepository.getBookingCurrentByBooker(booker, pageable);
+                break;
+            case FUTURE:
+                bookings =  bookingRepository.getBookingFutureByBooker(booker, pageable);
+                break;
+            case PAST:
+                bookings =  bookingRepository.getBookingPastByBooker(booker, pageable);
+                break;
+            case WAITING:
+                bookings =  bookingRepository.getBookingByStatusAndBooker(booker, BookingStatus.WAITING, pageable);
+                break;
+            case REJECTED:
+                bookings =  bookingRepository.getBookingByStatusAndBooker(booker, BookingStatus.REJECTED, pageable);
+                break;
+            default:
+                break;
+        }
+
+        return bookings.getContent().stream()
+            .map(BookingMapper::mapToBookingDto)
+            .collect(Collectors.toList());
+    }
+
+    private void checkFromSize(int from, int size) {
+        if (from < 0 & size < 0) {
+            throw new BadRequestException(String.format("Negative from(%d) and size(%d)", from, size));
+        }
+        if (from < 0) {
+            throw new BadRequestException(String.format("Negative from: %d", from));
+        }
+        if (size < 0) {
+            throw new BadRequestException(String.format("Negative size: %d", size));
+        }
     }
 }

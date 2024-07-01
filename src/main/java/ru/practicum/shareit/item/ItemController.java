@@ -15,7 +15,7 @@ public class ItemController {
     @PostMapping
     public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") Long userId,
                            @Valid @RequestBody ItemDto itemDto) {
-        return itemService.addNewItem(userId, itemDto);
+        return itemService.addItem(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
@@ -38,20 +38,24 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getItem(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemService.getItemsByOwner(userId);
+    public List<ItemDto> getItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                 @RequestParam(required = false, defaultValue = "0") Integer from,
+                                 @RequestParam(required = false, defaultValue = "20") Integer size) {
+        return itemService.getItemsByOwner(userId, from, size);
     }
 
     @GetMapping("/search")
     public List<ItemDto> search(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                @RequestParam String text) {
-        return itemService.search(text);
+                                @RequestParam String text,
+                                @RequestParam(required = false, defaultValue = "0") Integer from,
+                                @RequestParam(required = false, defaultValue = "20") Integer size) {
+        return itemService.search(text, from, size);
     }
 
     @PostMapping("{itemId}/comment")
     public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Long userId,
                                  @PathVariable Long itemId,
                                  @RequestBody CommentDto commentDto) {
-        return itemService.addNewComment(userId, itemId, commentDto);
+        return itemService.addComment(userId, itemId, commentDto);
     }
 }
