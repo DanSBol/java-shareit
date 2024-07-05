@@ -8,9 +8,6 @@ services:
       - POSTGRES_PASSWORD=12345
       - POSTGRES_USER=dbuser
       - POSTGRES_DB=shareit
-      - TZ=Europe/Moscow
-    volumes:
-      - /usr/share/zoneinfo/Europe:/usr/share/zoneinfo/Europe:ro
     healthcheck:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
       timeout: 5s
@@ -31,9 +28,6 @@ services:
       - POSTGRES_PASSWORD=12345
       - DB_HOST=postgresql
       - DB_PORT=5432
-      - TZ=Europe/Moscow
-    volumes:
-      - /usr/share/zoneinfo/Europe:/usr/share/zoneinfo/Europe:ro
   gateway:
     build: gateway
     container_name: shareIt-gateway
@@ -41,7 +35,3 @@ services:
       - "8080:8080"
     depends_on:
       - server
-    environment:
-      - TZ=Europe/Moscow
-    volumes:
-      - /usr/share/zoneinfo/Europe:/usr/share/zoneinfo/Europe:ro
