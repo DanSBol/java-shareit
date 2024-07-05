@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="10.3">
+<file name="C:\Users\danbo\IdeaProjects\java-shareit\server\src\main\java\ru\practicum\shareit\booking\BookingRepository.java">
+</file>
+<file name="C:\Users\danbo\IdeaProjects\java-shareit\server\src\main\java\ru\practicum\shareit\booking\BookingServiceImpl.java">
+</file>
+<file name="C:\Users\danbo\IdeaProjects\java-shareit\server\src\main\java\ru\practicum\shareit\item\ItemServiceImpl.java">
+</file>
+<file name="C:\Users\danbo\IdeaProjects\java-shareit\server\src\main\java\ru\practicum\shareit\request\RequestServiceImpl.java">
+</file>
+<file name="C:\Users\danbo\IdeaProjects\java-shareit\server\src\main\java\ru\practicum\shareit\ShareItServer.java">
+</file>
+</checkstyle>

@@ -1,0 +1,19 @@
+#Fri Jul 05 11:40:21 MSK 2024
+C\:\\Users\\danbo\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\booking\\BookingClient.java=1720093152133
+C\:\\Users\\danbo\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\booking\\dto\\BookingShotDto.java=1720085516200
+C\:\\Users\\danbo\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\exception\\BadRequestException.java=1717576212504
+C\:\\Users\\danbo\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\exception\\NotFoundException.java=1718881227935
+C\:\\Users\\danbo\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\exception\\error\\ErrorHandler.java=1720094295329
+C\:\\Users\\danbo\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\exception\\error\\ErrorResponse.java=1720167901380
+C\:\\Users\\danbo\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\item\\ItemClient.java=1720089014151
+C\:\\Users\\danbo\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\item\\ItemController.java=1720089014167
+C\:\\Users\\danbo\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\item\\dto\\CommentDto.java=1720085516215
+C\:\\Users\\danbo\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\item\\dto\\ItemDto.java=1720085516200
+C\:\\Users\\danbo\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\request\\RequestClient.java=1720128250992
+C\:\\Users\\danbo\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\request\\dto\\RequestDto.java=1720085516214
+C\:\\Users\\danbo\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\user\\UserClient.java=1720083953367
+C\:\\Users\\danbo\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\user\\UserController.java=1720084525146
+C\:\\Users\\danbo\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\user\\dto\\UserDto.java=1720082930747
+C\:\\Users\\danbo\\IdeaProjects\\java-shareit\\gateway\\src\\main\\resources\\application.properties=1720015293887
+configuration*?=14FA71467A3C744DF8F614A5C7606313624DD911
+module-resource*?\:suppressions.xml=AF2D3E620D3C65A14EDA4B1F32DD318FEEF405BC
