@@ -6,9 +6,9 @@ import org.hibernate.annotations.OnDeleteAction;
 import ru.practicum.shareit.request.Request;
 import ru.practicum.shareit.user.User;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "items")

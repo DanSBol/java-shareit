@@ -62,10 +62,10 @@ public class ItemServiceImpl implements ItemService {
 
         List<Booking> bookingsPast = bookingRepository.getBookingOnePast(item, LocalDateTime.now());
         BookingShotDto bookingPast = bookingsPast.isEmpty() ? null :
-                BookingMapper.mapToBookingShotDto(bookingsPast.getFirst());
+                BookingMapper.mapToBookingShotDto(bookingsPast.get(0));
         List<Booking> bookingsNext = bookingRepository.getBookingOneFutureAllStatuses(item, LocalDateTime.now());
         BookingShotDto bookingNext = bookingsNext.isEmpty() ? null :
-                BookingMapper.mapToBookingShotDto(bookingsNext.getFirst());
+                BookingMapper.mapToBookingShotDto(bookingsNext.get(0));
         List<Comment> comments = commentRepository.getCommentsForItem(item.getId());
         Set<CommentDto> commentsDto = new HashSet<>(CommentMapper.mapToCommentsDto(comments));
         return ItemMapper.mapToItemDto(item, bookingPast, bookingNext, commentsDto);
@@ -85,10 +85,10 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Item not found."));
         List<Booking> bookingsPast = bookingRepository.getBookingOnePast(item, LocalDateTime.now());
         BookingShotDto bookingPast = bookingsPast.isEmpty() ? null :
-                BookingMapper.mapToBookingShotDto(bookingsPast.getFirst());
+                BookingMapper.mapToBookingShotDto(bookingsPast.get(0));
         List<Booking> bookingsNext = bookingRepository.getBookingOneFutureApproved(item, LocalDateTime.now());
         BookingShotDto bookingNext = bookingsNext.isEmpty() ? null :
-                BookingMapper.mapToBookingShotDto(bookingsNext.getFirst());
+                BookingMapper.mapToBookingShotDto(bookingsNext.get(0));
         List<Comment> comments = commentRepository.getCommentsForItem(item.getId());
         Set<CommentDto> commentsDto = new HashSet<>(CommentMapper.mapToCommentsDto(comments));
         return ItemMapper.mapToItemDto(item, userId == item.getOwner().getId() ? bookingPast : null,
@@ -103,10 +103,10 @@ public class ItemServiceImpl implements ItemService {
         for (Item item : items) {
             List<Booking> bookingsPast = bookingRepository.getBookingOnePast(item, LocalDateTime.now());
             BookingShotDto bookingPast = bookingsPast.isEmpty() ? null :
-                    BookingMapper.mapToBookingShotDto(bookingsPast.getFirst());
+                    BookingMapper.mapToBookingShotDto(bookingsPast.get(0));
             List<Booking> bookingsNext = bookingRepository.getBookingOneFutureAllStatuses(item, LocalDateTime.now());
             BookingShotDto bookingNext = bookingsNext.isEmpty() ? null :
-                    BookingMapper.mapToBookingShotDto(bookingsNext.getFirst());
+                    BookingMapper.mapToBookingShotDto(bookingsNext.get(0));
             List<Comment> comments = commentRepository.getCommentsForItem(item.getId());
             Set<CommentDto> commentsDto = new HashSet<>(CommentMapper.mapToCommentsDto(comments));
             itemsDto.add(ItemMapper.mapToItemDto(item, bookingPast, bookingNext, commentsDto));
@@ -126,10 +126,10 @@ public class ItemServiceImpl implements ItemService {
             for (Item item : items) {
                 List<Booking> bookingsPast = bookingRepository.getBookingOnePast(item, LocalDateTime.now());
                 BookingShotDto bookingPast = bookingsPast.isEmpty() ? null :
-                        BookingMapper.mapToBookingShotDto(bookingsPast.getFirst());
+                        BookingMapper.mapToBookingShotDto(bookingsPast.get(0));
                 List<Booking> bookingsNext = bookingRepository.getBookingOneFutureApproved(item, LocalDateTime.now());
                 BookingShotDto bookingNext = bookingsNext.isEmpty() ? null :
-                        BookingMapper.mapToBookingShotDto(bookingsNext.getFirst());
+                        BookingMapper.mapToBookingShotDto(bookingsNext.get(0));
                 itemsDto.add(ItemMapper.mapToItemDto(item, bookingPast, bookingNext, null));
             }
             return itemsDto;

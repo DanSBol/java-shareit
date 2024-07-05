@@ -3,7 +3,7 @@ package ru.practicum.shareit.request;
 import lombok.*;
 import ru.practicum.shareit.item.ItemDto;
 
-import jakarta.validation.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Data
