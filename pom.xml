@@ -18,6 +18,8 @@
 
 	<properties>
 		<java.version>21</java.version>
+		<sourceCompatibility>21</sourceCompatibility>
+		<targetCompatibility>21</targetCompatibility>
 	</properties>
 
 	<modules>
