@@ -7,8 +7,6 @@ import ru.practicum.shareit.request.Request;
 import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "items")
@@ -32,15 +30,12 @@ public class Item {
     @ToString.Exclude
     private Request request;
 
-    @NotBlank
     @Column
     private String name;
 
-    @NotBlank
     @Column
     private String description;
 
-    @NotNull
     @Column(name = "is_available")
     private Boolean available;
 }

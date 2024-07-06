@@ -6,7 +6,6 @@ import org.hibernate.annotations.OnDeleteAction;
 import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Entity
@@ -25,7 +24,6 @@ public class Request {
     @ToString.Exclude
     private User requestor;
 
-    @NotBlank
     private String description;
     private LocalDateTime created = LocalDateTime.now();
 }

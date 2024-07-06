@@ -5,8 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.BookingShotDto;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Data
@@ -15,11 +13,8 @@ import java.util.Set;
 public class ItemDto {
     private Long id;
     private Long userId;
-    @NotBlank
     private String name;
-    @NotBlank
     private String description;
-    @NotNull
     private Boolean available;
     private BookingShotDto lastBooking;
     private BookingShotDto nextBooking;
